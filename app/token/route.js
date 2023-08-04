@@ -12,7 +12,7 @@ export async function GET(req) {
   if (state === null || state != storedState) {
     // THROW SOME ERROR
   } else {
-    console.log(process.env.VERCEL_URL + process.env.REDIRECT_URI);
+    console.log(process.env.REDIRECT_URI);
     let body = new URLSearchParams({
       code: code,
       redirect_uri: process.env.REDIRECT_URI,
@@ -51,6 +51,6 @@ export async function GET(req) {
       .onConflict("spotifyid")
       .ignore();
 
-    return NextResponse.redirect("http://localhost:3000/home");
+    return NextResponse.redirect(process.env.URL);
   }
 }
