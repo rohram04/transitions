@@ -15,7 +15,7 @@ export async function GET(req) {
     console.log(process.env.VERCEL_URL + process.env.REDIRECT_URI);
     let body = new URLSearchParams({
       code: code,
-      redirect_uri: process.env.VERCEL_URL + process.env.REDIRECT_URI,
+      redirect_uri: process.env.REDIRECT_URI,
       grant_type: "authorization_code",
     });
 

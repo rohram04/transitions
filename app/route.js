@@ -20,14 +20,14 @@ export async function GET(request) {
 
   const cookieStore = cookies();
   cookies().set("state", state);
-  console.log(process.env.VERCEL_URL + process.env.REDIRECT_URI);
+  console.log(process.env.REDIRECT_URI);
   return NextResponse.redirect(
     "https://accounts.spotify.com/authorize?" +
       querystring.stringify({
         response_type: "code",
         client_id: process.env.CLIENT_ID,
         scope: scope,
-        redirect_uri: process.env.VERCEL_URL + process.env.REDIRECT_URI,
+        redirect_uri: process.env.REDIRECT_URI,
         state: state,
       })
   );
