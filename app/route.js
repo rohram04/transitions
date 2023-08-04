@@ -27,7 +27,8 @@ export async function GET(request) {
         response_type: "code",
         client_id: process.env.CLIENT_ID,
         scope: scope,
-        redirect_uri: process.env.REDIRECT_URI,
+        redirect_uri:
+          process.env.NEXT_PUBLIC_VERCEL_URL + process.env.REDIRECT_URI,
         state: state,
       })
   );
