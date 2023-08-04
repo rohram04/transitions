@@ -51,6 +51,6 @@ export async function GET(req) {
       .onConflict("spotifyid")
       .ignore();
 
-    return NextResponse.redirect(process.env.URL);
+    return NextResponse.redirect(process.env.URL + "/home");
   }
 }
