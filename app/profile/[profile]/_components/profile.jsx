@@ -20,10 +20,12 @@ export default function Profile({ profile }) {
         </div>
       ) : (
         <div className="rounded-full bg-slate-700 p-10 w-44 md:w-48 md:h-48 m-4">
-          <FiUser className="w-full h-full" />
+          <FiUser className="w-full h-full text-white" />
         </div>
       )}
-      <div className="text-2xl md:text-3xl">{profile.display_name}</div>
+      <div className="text-2xl md:text-3xl text-white">
+        {profile.display_name}
+      </div>
     </div>
   );
 }

@@ -18,7 +18,7 @@ export default function TrackDisplay({
           alt={track?.track?.album?.name}
         />
       </span>
-      <div className="text-center">
+      <div className="text-center text-white">
         <div>{track.track.name}</div>
         <div className="text-sm">
           {track.track.album.artists.map((artist, index) => {

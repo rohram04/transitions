@@ -80,7 +80,7 @@ export default function TrackPlayer({
             });
             setPreviewing(false);
           }}
-          className="h-10 rounded-lg hover:opacity-50 transition ease-in-out duration-300"
+          className="h-10 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
         >
           <CgRedo size="auto" />
         </button>
@@ -94,7 +94,7 @@ export default function TrackPlayer({
             await preview(device_id, tracks, selectedTracks[0].position);
             setPreviewing(true);
           }}
-          className="h-12 rounded-lg hover:opacity-50 transition ease-in-out duration-300"
+          className="h-12 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
         >
           {playerState == null || playerState.paused ? (
             <BiPlay size="auto" />
@@ -115,7 +115,7 @@ export default function TrackPlayer({
             removeTrack(0);
             removeTrack(1);
           }}
-          className="h-10 rounded-lg hover:opacity-50 transition ease-in-out duration-300"
+          className="h-10 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
         >
           <BiPlus size="auto" />
         </button>

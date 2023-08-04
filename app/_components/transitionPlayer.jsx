@@ -97,7 +97,7 @@ export default function TransitionPlayer({
 
       <div className="flex items-center mx-2 sm:m-4 sm:gap-4 justify-center">
         <div className="flex flex-col sm:flex-row sm:gap-2 items-center mr-2 sm:mr-0">
-          <div className="sm:text-lg order-last sm:order-first">
+          <div className="sm:text-lg order-last sm:order-first text-white">
             {transitions[activeTransition].likes}
           </div>
           <button
@@ -129,7 +129,7 @@ export default function TransitionPlayer({
                 transitions[activeTransition].id
               );
             }}
-            className="h-10"
+            className="h-10 text-white"
           >
             {transitions[activeTransition].liked === "0" ? (
               <BsSuitHeart size="auto" />
@@ -156,7 +156,7 @@ export default function TransitionPlayer({
               alt={transitions[activeTransition].profile?.display_name}
             />
           </span>
-          <div className="sm:text-xl ml-2">
+          <div className="sm:text-xl ml-2 text-white">
             {transitions[activeTransition].profile?.display_name}
           </div>
         </button>
@@ -164,7 +164,7 @@ export default function TransitionPlayer({
           onClick={() => {
             setActiveTransition((prev) => prev - 1);
           }}
-          className="h-20 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30"
+          className="h-20 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30 text-white"
           disabled={activeTransition === 0}
         >
           <MdNavigateBefore size="auto" />
@@ -182,7 +182,7 @@ export default function TransitionPlayer({
               transitions[activeTransition].starttime
             );
           }}
-          className="h-20 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300"
+          className="h-20 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
         >
           {playerState == null || playerState.paused ? (
             <BiPlay size="auto" />
@@ -197,7 +197,7 @@ export default function TransitionPlayer({
             }
             setActiveTransition((prev) => prev + 1);
           }}
-          className="h-20 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30"
+          className="h-20 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30 text-white"
           disabled={activeTransition === transitions.length - 1}
         >
           <MdNavigateNext size="auto" />
@@ -223,7 +223,7 @@ function Track({ track, progress = 0 }) {
           alt={track?.album?.name}
         />
       </span>
-      <div className="text-center p-1 sm:p-4">
+      <div className="text-center p-1 sm:p-4 text-white">
         <div className="text-xl sm:text-4xl mb-1">{track.name}</div>
         <div className="sm:text-xl">
           {track.album.artists.map((artist, index) => {

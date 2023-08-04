@@ -35,7 +35,7 @@ export default function Search({
         <input
           onChange={handleChange}
           placeholder="Search"
-          className=" w-full p-2 rounded-lg bg-slate-800 outline-none hover:bg-slate-700 focus:bg-slate-700"
+          className=" w-full p-2 rounded-lg bg-slate-800 outline-none hover:bg-slate-700 focus:bg-slate-700 text-white"
           type="text"
         />
       </div>

@@ -11,7 +11,7 @@ export default function Upload(props) {
     <Fragment>
       <button
         onClick={() => setOpen(true)}
-        className="h-14 rounded-lg hover:opacity-50 transition ease-in-out duration-300"
+        className="h-14 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
       >
         <BiPlus size="auto" />
       </button>

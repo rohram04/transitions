@@ -18,8 +18,8 @@ export default function Track({ track }) {
         />
       </span>
       <span class="flex flex-col flex-initial py-2 min-w-0">
-        <div className="truncate text-sm">{track.name}</div>
-        <div className="truncate text-xs">{artists}</div>
+        <div className="truncate text-sm text-white">{track.name}</div>
+        <div className="truncate text-xs text-white">{artists}</div>
       </span>
     </div>
   );

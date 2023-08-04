@@ -18,8 +18,8 @@ export default function Transition({ transition, tracks, onClick, profile }) {
         />
         <Track percentage={0} track={tracks[transition.trackid2]} />
       </div>
-      <div className="flex h-8 w-full justify-center px-2 gap-2">
-        <span className="flex items-center gap-1">
+      <div className="flex h-8 w-full justify-center px-2 gap-2 text-white">
+        <span className="flex items-center gap-1 text-white">
           <span>{transition.likes}</span>
           {transition.liked === "0" ? (
             <BsSuitHeart size="auto" className="p-1" />
@@ -35,7 +35,7 @@ export default function Transition({ transition, tracks, onClick, profile }) {
 
 function Track({ track, percentage }) {
   return (
-    <div className="flex flex-col w-full h-48 px-2 overflow-hidden">
+    <div className="flex flex-col w-full h-56 px-2 overflow-hidden">
       <span class="flex-none relative basis-2/3">
         <Image
           className="object-contain max-h-min"
@@ -44,10 +44,15 @@ function Track({ track, percentage }) {
           alt={track?.album?.name}
         />
       </span>
-      <div className="text-center whitespace-nowrap truncate">
-        {track?.name}
+      <div className="text-center text-white whitespace nowrap truncate">
+        <div>{track.name}</div>
+        <div className="text-sm text-white">
+          {track.album.artists.map((artist, index) => {
+            return index == 0 ? artist.name : ", " + artist.name;
+          })}
+        </div>
       </div>
-      <div className="w-full h-1.5 rounded-full bg-slate-600 my-2">
+      <div className="w-full h-1.5 rounded-full bg-slate-600 mt-3">
         <div
           className="h-full rounded-full bg-white"
           style={{ width: percentage + "%" }}

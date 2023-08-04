@@ -15,7 +15,7 @@ function Track({ track, progress = 0 }) {
   //   if (percentage > 99) percentage = 100;
 
   return (
-    <div className="flex flex-col basis-1/2 px-4 py-4 gap-2 overflow-hidden">
+    <div className="flex flex-col basis-1/2 px-4 py-4 gap-2 overflow-hidden ">
       <span class="flex-none relative grow">
         <Image
           className="object-contain max-h-min"
@@ -24,7 +24,7 @@ function Track({ track, progress = 0 }) {
           alt={track?.album?.name}
         />
       </span>
-      <div className="text-center text whitespace-nowrap truncate">
+      <div className="text-center text whitespace-nowrap truncate text-white">
         {track?.name}
       </div>
       <div className="w-full h-1.5 rounded-full bg-slate-600 mb-2">
