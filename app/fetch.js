@@ -7,7 +7,6 @@ export default async function fetchData(url, method = { headers: {} }) {
   }`;
   let result = await fetch(url, method);
   if (result.status === 401) {
-    console.log(cookies().get("refresh_token").value);
     const body = new URLSearchParams({
       grant_type: "refresh_token",
       refresh_token: cookies().get("refresh_token").value,
@@ -25,7 +24,6 @@ export default async function fetchData(url, method = { headers: {} }) {
       },
       body: body,
     });
-    console.log(response);
     if (!response.ok)
       throw Error("Error Retriving Access Token using Refresh Token");
     const { access_token } = await response.json();

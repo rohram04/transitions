@@ -4,8 +4,6 @@ import { cookies } from "next/headers";
 import fetch from "../../../fetch";
 
 export default async function getTransitions(user, ids) {
-  console.log("TRANSITION USER", user);
-  console.log("IDS", ids);
   const transitions = await pg("transitions")
     .orderBy(pg.raw("RANDOM()"))
     .limit(3)
@@ -41,7 +39,6 @@ export default async function getTransitions(user, ids) {
     ];
   }
 
-  console.log("TRANSITIONS", transitions);
   if (transitions.length === 0) return { transitions, tracks: [] };
 
   const res = await fetch(

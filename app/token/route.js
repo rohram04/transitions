@@ -5,7 +5,6 @@ import request from "request";
 import pg from "../connection";
 
 export async function GET(req) {
-  console.log(req.nextUrl.searchParams.get("code"));
   var code = req.nextUrl.searchParams.get("code") || null;
   var state = req.nextUrl.searchParams.get("state") || null;
   const storedState = cookies().get("state").value;

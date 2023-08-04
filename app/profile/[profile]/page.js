@@ -25,7 +25,6 @@ export default function Page({ params }) {
   useLayoutEffect(() => {
     async function fetchData() {
       const { transitions, tracks } = await getTransitions(params.profile);
-      console.log(transitions);
       setTransitions(transitions);
       setTracks(tracks);
       // await createPlayer(setPlayer, setPlayerState, setActive);
@@ -80,12 +79,10 @@ export default function Page({ params }) {
           {transitions.length > 0 && (
             <div className="grid grid-cols-fluid gap-4 pt-4">
               {transitions.map((transition, index) => {
-                console.log(transition.id);
                 return (
                   <Transition
                     key={transition.id}
                     onClick={() => {
-                      console.log("hello");
                       setStartIndex(index);
                     }}
                     transition={transition}

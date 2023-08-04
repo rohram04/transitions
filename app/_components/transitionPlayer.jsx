@@ -30,7 +30,6 @@ export default function TransitionPlayer({
   useEffect(() => {
     clearInterval(intervalRef.current);
     setPositions({});
-    console.log(transitions[activeTransition]);
   }, [activeTransition]);
 
   useEffect(() => {
@@ -79,7 +78,6 @@ export default function TransitionPlayer({
       playerState?.track_window?.previous_tracks[0].id ==
         transitions[activeTransition].trackid2
     ) {
-      console.log("hello15", playerState, transitions[activeTransition]);
       setActiveTransition((prev) => prev + 1);
     }
   }, [playerState]);
@@ -173,7 +171,6 @@ export default function TransitionPlayer({
         </button>
         <button
           onClick={() => {
-            // console.log(playerState);
             if (playerState?.track_window.current_track)
               return player.togglePlay();
             preview(
