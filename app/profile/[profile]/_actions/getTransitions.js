@@ -38,6 +38,9 @@ export async function getTransitions(user) {
       transition.trackid2,
     ];
   }
+
+  if (transitions.length === 0) return { transitions, tracks: [] };
+
   const res = await fetch(
     "https://api.spotify.com/v1/tracks?" +
       new URLSearchParams({ ids: transitionids.toString() }),
