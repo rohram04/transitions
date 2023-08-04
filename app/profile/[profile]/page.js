@@ -77,7 +77,7 @@ export default function Page({ params }) {
             {profile && <Profile profile={profile} />}
           </div>
           {transitions.length > 0 && (
-            <div className="grid grid-cols-fluid gap-4 pt-4">
+            <div className="grid grid-cols-fluid gap-4 pt-4 bg-slate-950">
               {transitions.map((transition, index) => {
                 return (
                   <Transition
