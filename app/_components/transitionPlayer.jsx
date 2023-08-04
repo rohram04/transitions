@@ -45,7 +45,7 @@ export default function TransitionPlayer({
       ],
       transitions[activeTransition].starttime
     );
-  }, [activeTransition, tracks, device_id]);
+  }, [activeTransition, device_id]);
 
   useEffect(() => {
     if (!player) return;
