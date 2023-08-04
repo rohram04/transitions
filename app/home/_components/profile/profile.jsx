@@ -43,10 +43,10 @@ export default function Profile({ player }) {
             alt={profile.display_name}
           />
         </span>
-        <div className="h-min place-self-center hover:text-white/50 transition ease-in-out duration-300">
+        <div className="h-min place-self-center hover:text-white/50 transition ease-in-out duration-300 text-white">
           {profile.display_name}
         </div>
-        <div className="place-self-center">&#9660;</div>
+        <div className="place-self-center text-white">&#9660;</div>
       </button>
       <Transition
         show={showMenu}
