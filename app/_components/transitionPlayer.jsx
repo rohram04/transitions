@@ -214,7 +214,7 @@ function Track({ track, progress = 0 }) {
   //   if (percentage > 99) percentage = 100;
 
   return (
-    <div className="flex flex-col basis-1/2 w-full px-4 gap-2">
+    <div className="flex flex-col basis-1/2 w-full px-4 gap-2 whitespace-nowrap truncate">
       <span class="flex-none relative grow">
         <Image
           className="object-contain max-h-min"
@@ -224,10 +224,10 @@ function Track({ track, progress = 0 }) {
         />
       </span>
       <div className="text-center p-1 sm:p-4 text-white">
-        <div className="text-xl sm:text-4xl mb-1 whitespace nowrap truncate">
+        <div className="text-xl sm:text-4xl mb-1 whitespace-nowrap truncate">
           {track.name}
         </div>
-        <div className="sm:text-xl whitespace nowrap truncate">
+        <div className="sm:text-xl whitespace-nowrap truncate">
           {track.album.artists.map((artist, index) => {
             return index == 0 ? artist.name : ", " + artist.name;
           })}

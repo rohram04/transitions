@@ -18,9 +18,9 @@ export default function TrackDisplay({
           alt={track?.track?.album?.name}
         />
       </span>
-      <div className="text-center text-white whitespace nowrap truncate">
+      <div className="text-center text-white whitespace-nowrap truncate">
         <div>{track.track.name}</div>
-        <div className="text-sm whitespace nowrap truncate">
+        <div className="text-sm whitespace-nowrap truncate">
           {track.track.album.artists.map((artist, index) => {
             return index == 0 ? artist.name : ", " + artist.name;
           })}
