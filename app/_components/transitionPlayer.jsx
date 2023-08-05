@@ -224,8 +224,10 @@ function Track({ track, progress = 0 }) {
         />
       </span>
       <div className="text-center p-1 sm:p-4 text-white">
-        <div className="text-xl sm:text-4xl mb-1">{track.name}</div>
-        <div className="sm:text-xl">
+        <div className="text-xl sm:text-4xl mb-1 whitespace nowrap truncate">
+          {track.name}
+        </div>
+        <div className="sm:text-xl whitespace nowrap truncate">
           {track.album.artists.map((artist, index) => {
             return index == 0 ? artist.name : ", " + artist.name;
           })}
