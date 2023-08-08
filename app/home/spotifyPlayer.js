@@ -17,6 +17,7 @@ export default function usePlayer() {
       document.body.appendChild(script);
 
       window.onSpotifyWebPlaybackSDKReady = () => {
+        console.log("readying");
         const player = new window.Spotify.Player({
           name: "Web Playback SDK NEW",
           getOAuthToken: (cb) => {
@@ -40,6 +41,11 @@ export default function usePlayer() {
         player.addListener("player_state_changed", (state) => {
           setPlayerState(state);
         });
+
+        player.addListener("autoplay_failed", () => {
+          console.log("failed");
+        });
+
         player.connect();
       };
     }

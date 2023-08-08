@@ -82,7 +82,7 @@ export default function TrackPlayer({
           }}
           className="h-10 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
         >
-          <CgRedo size="auto" />
+          <CgRedo size="100%" />
         </button>
         <button
           onClick={async () => {
@@ -97,9 +97,9 @@ export default function TrackPlayer({
           className="h-12 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
         >
           {playerState == null || playerState.paused ? (
-            <BiPlay size="auto" />
+            <BiPlay size="100%" />
           ) : (
-            <BiPause size="auto" />
+            <BiPause size="100%" />
           )}
         </button>
         <button
@@ -117,7 +117,7 @@ export default function TrackPlayer({
           }}
           className="h-10 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
         >
-          <BiPlus size="auto" />
+          <BiPlus size="100%" />
         </button>
       </div>
       {/* <span className="h-min place-self-center">Start: 4:54</span> */}

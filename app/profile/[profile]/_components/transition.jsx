@@ -22,12 +22,12 @@ export default function Transition({ transition, tracks, onClick, profile }) {
         <span className="flex items-center gap-1 text-white">
           <span>{transition.likes}</span>
           {transition.liked === "0" ? (
-            <BsSuitHeart size="auto" className="p-1" />
+            <BsSuitHeart size="100%" className="p-1" />
           ) : (
-            <BsSuitHeartFill size="auto" className="text-red-500 p-1" />
+            <BsSuitHeartFill size="100%" className="text-red-500 p-1" />
           )}
         </span>
-        <BsFillPlayFill size="auto" className="w-fit" />
+        <BsFillPlayFill size="100%" className="w-fit" />
       </div>
     </div>
   );

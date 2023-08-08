@@ -58,7 +58,7 @@ export default function Page({ params }) {
               }}
               className="absolute h-12 top-0 left-0 mx-2 my-4 hover:opacity-50 transition ease-in-out duration-300 rounded-lg p-2 text-white"
             >
-              <IoMdArrowBack size="auto" />
+              <IoMdArrowBack size="100%" />
             </button>
           </TransitionPlayer>
         </>
@@ -71,7 +71,7 @@ export default function Page({ params }) {
             }}
             className="absolute h-12 top-0 left-0 mx-2 my-4 rounded-lg p-2 hover:opacity-50 transition ease-in-out duration-300 text-white"
           >
-            <IoMdArrowBack size="auto" />
+            <IoMdArrowBack size="100%" />
           </button>
           <div className="w-full flex justify-center mb-6">
             {profile && <Profile profile={profile} />}

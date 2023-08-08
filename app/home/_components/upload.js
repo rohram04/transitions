@@ -13,7 +13,7 @@ export default function Upload(props) {
         onClick={() => setOpen(true)}
         className="h-14 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
       >
-        <BiPlus size="auto" />
+        <BiPlus size="100%" />
       </button>
       <Modal open={open} onClose={() => setOpen(false)} {...props} />
     </Fragment>

@@ -132,9 +132,9 @@ export default function TransitionPlayer({
             className="h-10 text-white"
           >
             {transitions[activeTransition].liked === "0" ? (
-              <BsSuitHeart size="auto" />
+              <BsSuitHeart size="100%" />
             ) : (
-              <BsSuitHeartFill size="auto" className="text-red-500" />
+              <BsSuitHeartFill size="100%" className="text-red-500" />
             )}
           </button>
         </div>
@@ -167,7 +167,7 @@ export default function TransitionPlayer({
           className="h-20 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30 text-white"
           disabled={activeTransition === 0}
         >
-          <MdNavigateBefore size="auto" />
+          <MdNavigateBefore size="100%" />
         </button>
         <button
           onClick={() => {
@@ -185,9 +185,9 @@ export default function TransitionPlayer({
           className="h-20 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
         >
           {playerState == null || playerState.paused ? (
-            <BiPlay size="auto" />
+            <BiPlay size="100%" />
           ) : (
-            <BiPause size="auto" />
+            <BiPause size="100%" />
           )}
         </button>
         <button
@@ -200,7 +200,7 @@ export default function TransitionPlayer({
           className="h-20 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30 text-white"
           disabled={activeTransition === transitions.length - 1}
         >
-          <MdNavigateNext size="auto" />
+          <MdNavigateNext size="100%" />
         </button>
         {children}
       </div>
