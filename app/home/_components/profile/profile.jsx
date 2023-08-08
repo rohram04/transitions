@@ -36,7 +36,7 @@ export default function Profile({ player }) {
       >
         <span className="flex-none h-fit relative">
           <Image
-            className="object-contain rounded-full max-h-min "
+            className="object-contain rounded-full"
             src={profile?.images[1]?.url}
             height={40}
             width={40}

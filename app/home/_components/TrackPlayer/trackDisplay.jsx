@@ -12,7 +12,7 @@ export default function TrackDisplay({
     <div className="h-full rounded-xl flex flex-col">
       <span class="flex-none relative grow">
         <Image
-          className="object-contain max-h-min p-2"
+          className="object-contain p-2"
           src={track?.track?.album?.images[0].url}
           fill={true}
           alt={track?.track?.album?.name}

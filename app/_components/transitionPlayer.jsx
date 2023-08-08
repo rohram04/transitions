@@ -217,7 +217,7 @@ function Track({ track, progress = 0 }) {
     <div className="flex flex-col basis-1/2 w-full px-4 gap-2 whitespace-nowrap truncate">
       <span class="flex-none relative grow">
         <Image
-          className="object-contain max-h-min"
+          className="object-contain"
           src={track?.album?.images[0].url}
           fill={true}
           alt={track?.album?.name}

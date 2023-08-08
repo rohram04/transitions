@@ -38,7 +38,7 @@ function Track({ track, percentage }) {
     <div className="flex flex-col w-full h-56 px-2 overflow-hidden">
       <span class="flex-none relative basis-2/3">
         <Image
-          className="object-contain max-h-min"
+          className="object-contain"
           src={track?.album?.images[0].url}
           fill={true}
           alt={track?.album?.name}
