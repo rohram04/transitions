@@ -56,7 +56,7 @@ export default function Page({ params }) {
                 player.pause();
                 setStartIndex(false);
               }}
-              className="absolute h-12 top-0 left-0 mx-2 my-4 hover:opacity-50 transition ease-in-out duration-300 rounded-lg p-2 text-white"
+              className="absolute h-12 w-12 top-0 left-0 mx-2 my-4 hover:opacity-50 transition ease-in-out duration-300 rounded-lg p-2 text-white"
             >
               <IoMdArrowBack size="100%" />
             </button>
@@ -69,7 +69,7 @@ export default function Page({ params }) {
               player.disconnect();
               router.push("/home");
             }}
-            className="absolute h-12 top-0 left-0 mx-2 my-4 rounded-lg p-2 hover:opacity-50 transition ease-in-out duration-300 text-white"
+            className="absolute h-12 w-12 top-0 left-0 mx-2 my-4 rounded-lg p-2 hover:opacity-50 transition ease-in-out duration-300 text-white"
           >
             <IoMdArrowBack size="100%" />
           </button>

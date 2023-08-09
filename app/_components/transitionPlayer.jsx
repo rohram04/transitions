@@ -129,7 +129,7 @@ export default function TransitionPlayer({
                 transitions[activeTransition].id
               );
             }}
-            className="h-10 text-white"
+            className="h-10 w-10 text-white"
           >
             {transitions[activeTransition].liked === "0" ? (
               <BsSuitHeart size="100%" />
@@ -164,7 +164,7 @@ export default function TransitionPlayer({
           onClick={() => {
             setActiveTransition((prev) => prev - 1);
           }}
-          className="h-20 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30 text-white"
+          className="h-20 w-20 sm:w-16 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30 text-white"
           disabled={activeTransition === 0}
         >
           <MdNavigateBefore size="100%" />
@@ -182,7 +182,7 @@ export default function TransitionPlayer({
               transitions[activeTransition].starttime
             );
           }}
-          className="h-20 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
+          className="h-20 w-20 sm:w-16 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
         >
           {playerState == null || playerState.paused ? (
             <BiPlay size="100%" />
