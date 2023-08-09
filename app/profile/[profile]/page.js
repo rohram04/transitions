@@ -48,7 +48,7 @@ export default function Page({ params }) {
     );
 
   return (
-    <div className="w-full hd-screen p-2 bg-slate-950">
+    <div className="w-full hd-screen bg-slate-950">
       {typeof startIndex === "number" ? (
         <>
           <TransitionPlayer

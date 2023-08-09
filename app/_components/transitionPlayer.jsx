@@ -95,7 +95,7 @@ export default function TransitionPlayer({
 
   return (
     <div
-      className="flex flex-col w-full h-full"
+      className="flex flex-col w-full h-full p-2"
       style={{
         backgroundImage: `linear-gradient(to right, ${track1Color?.darkVibrant}, ${track2Color?.darkVibrant})`,
       }}
