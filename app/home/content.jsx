@@ -6,6 +6,7 @@ import Profile from "./_components/profile/profile";
 import TransitionPlayer from "./_components/TransitionPlayer/TransitionPlayer";
 import usePlayer from "./spotifyPlayer";
 import { CgSpinner } from "react-icons/cg";
+import Logo from "../_components/spotifyLogo";
 
 export default function Content() {
   // const [player, setPlayer] = useState({});
@@ -15,7 +16,10 @@ export default function Content() {
 
   return (
     <>
-      <Profile player={player.player} />
+      <div className="flex flex-row absolute z-10 top-0 w-full items-center justify-between">
+        <Logo />
+        <Profile player={player.player} />
+      </div>
       {player.player != null ? (
         <>
           <div className="w-full h-full bg-slate-950 p-4">

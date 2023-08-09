@@ -25,7 +25,7 @@ export default function Profile({ player }) {
 
   return (
     <div
-      className="z-10 absolute right-0 top-0 m-2 w-fit"
+      className="z-10 m-2 w-fit"
       onBlur={(event) => {
         if (event.currentTarget.contains(event.relatedTarget)) return;
         setShowMenu(false);

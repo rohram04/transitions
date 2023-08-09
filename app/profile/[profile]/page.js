@@ -11,6 +11,7 @@ import { IoMdArrowBack } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import { getProfile } from "./_components/getProfile.js";
 import { CgSpinner } from "react-icons/cg";
+import Logo from "../../_components/spotifyLogo";
 
 export default function Page({ params }) {
   const [transitions, setTransitions] = useState([]);
@@ -41,7 +42,7 @@ export default function Page({ params }) {
 
   if (profile === undefined || transitions.length < 1)
     return (
-      <div className="h-screen w-screen flex place-content-center place-items-center bg-slate-950">
+      <div className="hd-screen w-screen flex place-content-center place-items-center bg-slate-950">
         <CgSpinner size={50} className="animate-spin h-min " />
       </div>
     );
@@ -81,7 +82,7 @@ export default function Page({ params }) {
           >
             <IoMdArrowBack size="100%" />
           </button>
-          <div className="w-full flex justify-center mb-6">
+          <div className="w-full flex justify-center mb-6 mt-6">
             {profile && <Profile profile={profile} />}
           </div>
           {transitions.length > 0 && (
@@ -103,6 +104,9 @@ export default function Page({ params }) {
           )}
         </>
       )}
+      <div className="fixed z-10 right-0 top-0 m-2">
+        <Logo />
+      </div>
     </div>
   );
 }
