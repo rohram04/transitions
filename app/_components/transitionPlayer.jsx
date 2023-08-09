@@ -197,7 +197,7 @@ export default function TransitionPlayer({
             }
             setActiveTransition((prev) => prev + 1);
           }}
-          className="h-20 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30 text-white"
+          className="h-20 w-20 sm:w-16 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30 text-white"
           disabled={activeTransition === transitions.length - 1}
         >
           <MdNavigateNext size="100%" />
