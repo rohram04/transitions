@@ -10,6 +10,7 @@ import usePlayer from "../../home/spotifyPlayer";
 import { IoMdArrowBack } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import { getProfile } from "./_components/getProfile.js";
+import { CgSpinner } from "react-icons/cg";
 
 export default function Page({ params }) {
   const [transitions, setTransitions] = useState([]);
@@ -22,7 +23,7 @@ export default function Page({ params }) {
   // const [playerState, setPlayerState] = useState({});
   // const [active, setActive] = useState(false);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     async function fetchData() {
       const { transitions, tracks } = await getTransitions(params.profile);
       setTransitions(transitions);
@@ -37,6 +38,13 @@ export default function Page({ params }) {
     fetchData();
     fetchProfile();
   }, [params.profile]);
+
+  if (profile === undefined || transitions.length < 1)
+    return (
+      <div className="h-screen w-screen flex place-content-center place-items-center bg-slate-950">
+        <CgSpinner size={50} className="animate-spin h-min " />
+      </div>
+    );
 
   return (
     <div className="w-full hd-screen p-2 bg-slate-950">

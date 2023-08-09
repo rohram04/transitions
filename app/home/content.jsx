@@ -5,6 +5,7 @@ import createPlayer from "./spotifyPlayer";
 import Profile from "./_components/profile/profile";
 import TransitionPlayer from "./_components/TransitionPlayer/TransitionPlayer";
 import usePlayer from "./spotifyPlayer";
+import { CgSpinner } from "react-icons/cg";
 
 export default function Content() {
   // const [player, setPlayer] = useState({});
@@ -15,7 +16,7 @@ export default function Content() {
   return (
     <>
       <Profile player={player.player} />
-      {player.player != null && (
+      {player.player != null ? (
         <>
           <div className="w-full h-full bg-slate-950 p-4">
             <TransitionPlayer {...player}>
@@ -23,6 +24,10 @@ export default function Content() {
             </TransitionPlayer>
           </div>
         </>
+      ) : (
+        <div className="h-screen w-screen flex place-content-center place-items-center bg-slate-950">
+          <CgSpinner size={50} className="animate-spin h-min " />
+        </div>
       )}
     </>
   );
