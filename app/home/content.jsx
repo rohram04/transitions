@@ -25,7 +25,7 @@ export default function Content() {
           </div>
         </>
       ) : (
-        <div className="h-screen w-screen flex place-content-center place-items-center bg-slate-950">
+        <div className="h-full w-screen flex place-content-center place-items-center bg-slate-950">
           <CgSpinner size={50} className="animate-spin h-min " />
         </div>
       )}
