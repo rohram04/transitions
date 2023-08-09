@@ -22,7 +22,7 @@ export default function Content() {
       </div>
       {player.player != null ? (
         <>
-          <div className="w-full h-full bg-slate-950 p-4">
+          <div className="w-full h-full bg-slate-950">
             <TransitionPlayer {...player}>
               <Upload {...player} />
             </TransitionPlayer>

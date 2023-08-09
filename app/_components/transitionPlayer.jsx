@@ -7,6 +7,7 @@ import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
 import preview from "app/home/_components/TrackPlayer/actions/preview.js";
 import { useRouter, usePathname } from "next/navigation";
 import { like, unlike } from "./like.js";
+import { usePalette } from "react-palette";
 
 export default function TransitionPlayer({
   transitions,
@@ -26,6 +27,16 @@ export default function TransitionPlayer({
   const positionsRef = useRef();
   const router = useRouter();
   const pathname = usePathname();
+  const {
+    data: track1Color,
+    loading,
+    error,
+  } = usePalette(
+    tracks[transitions[activeTransition].trackid1].album?.images[0].url
+  );
+  const { data: track2Color } = usePalette(
+    tracks[transitions[activeTransition].trackid2].album?.images[0].url
+  );
 
   useEffect(() => {
     clearInterval(intervalRef.current);
@@ -83,7 +94,12 @@ export default function TransitionPlayer({
   }, [playerState]);
 
   return (
-    <div className="flex flex-col w-full h-full">
+    <div
+      className="flex flex-col w-full h-full"
+      style={{
+        backgroundImage: `linear-gradient(to right, ${track1Color?.darkVibrant}, ${track2Color?.darkVibrant})`,
+      }}
+    >
       <div className="flex flex-col gap-4 sm:flex-row grow px-8 pt-8">
         <Track
           track={tracks[transitions[activeTransition].trackid1]}
@@ -211,7 +227,6 @@ export default function TransitionPlayer({
 function Track({ track, progress = 0 }) {
   let percentage = (progress / track.duration_ms) * 100;
   if (percentage < 1) percentage = 0;
-  //   if (percentage > 99) percentage = 100;
 
   return (
     <div className="flex flex-col basis-1/2 w-full px-4 gap-2 whitespace-nowrap truncate">
