@@ -3,6 +3,7 @@ import { getUser, logout } from "./action";
 import { Transition } from "@headlessui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { BsCaretDownFill } from "react-icons/bs";
 
 export default function Profile({ player }) {
   const [profile, setProfile] = useState({});
@@ -32,7 +33,7 @@ export default function Profile({ player }) {
     >
       <button
         onClick={() => setShowMenu((state) => !state)}
-        className="flex gap-2 p-2 rounded-lg bg-slate-600"
+        className="flex gap-2 p-2 rounded-lg bg-slate-600 hover:opacity-70 transition ease-in-out duration-300"
       >
         <span className="flex-none h-fit relative">
           <Image
@@ -43,10 +44,12 @@ export default function Profile({ player }) {
             alt={profile.display_name}
           />
         </span>
-        <div className="h-min place-self-center hover:text-white/50 transition ease-in-out duration-300 text-white">
+        <div className="h-min place-self-center text-white">
           {profile.display_name}
         </div>
-        <div className="place-self-center text-white">&#9660;</div>
+        <div className="place-self-center text-white h-6 w-6">
+          <BsCaretDownFill size="100%" />
+        </div>
       </button>
       <Transition
         show={showMenu}
