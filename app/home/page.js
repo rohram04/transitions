@@ -3,7 +3,7 @@ import Content from "./content";
 
 export default function Home() {
   return (
-    <div className="w-full h-screen overflow-hidden">
+    <div className="w-full hd-screen overflow-hidden">
       <Content />
     </div>
   );

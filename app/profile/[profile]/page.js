@@ -39,7 +39,7 @@ export default function Page({ params }) {
   }, [params.profile]);
 
   return (
-    <div className="w-full h-screen p-2 bg-slate-950">
+    <div className="w-full hd-screen p-2 bg-slate-950">
       {typeof startIndex === "number" ? (
         <>
           <TransitionPlayer

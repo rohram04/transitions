@@ -35,6 +35,9 @@ module.exports = {
             display: "none",
           },
         },
+        ".hd-screen": {
+          height: "100dvh",
+        },
       });
     }),
   ],
