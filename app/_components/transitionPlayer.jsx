@@ -8,6 +8,7 @@ import preview from "app/home/_components/TrackPlayer/actions/preview.js";
 import { useRouter, usePathname } from "next/navigation";
 import { like, unlike } from "./like.js";
 import { usePalette } from "react-palette";
+import { useMediaQuery } from "./mediaMatchHook";
 
 export default function TransitionPlayer({
   transitions,
@@ -37,6 +38,7 @@ export default function TransitionPlayer({
   const { data: track2Color } = usePalette(
     tracks[transitions[activeTransition].trackid2].album?.images[0].url
   );
+  const sm = useMediaQuery("(min-width: 640px)");
 
   useEffect(() => {
     clearInterval(intervalRef.current);
@@ -97,7 +99,9 @@ export default function TransitionPlayer({
     <div
       className="flex flex-col w-full h-full p-2"
       style={{
-        backgroundImage: `linear-gradient(to right, ${track1Color?.darkVibrant}, ${track2Color?.darkVibrant})`,
+        backgroundImage: sm
+          ? `linear-gradient(to right, ${track1Color.darkMuted}, ${track2Color.darkMuted})`
+          : `linear-gradient(${track1Color.darkMuted}, ${track2Color.darkMuted})`,
       }}
     >
       <div className="flex flex-col gap-4 sm:flex-row grow px-8 pt-8">

@@ -82,11 +82,11 @@ export default function Page({ params }) {
           >
             <IoMdArrowBack size="100%" />
           </button>
-          <div className="w-full flex justify-center mb-6 mt-6">
+          <div className="w-full flex justify-center mb-6 pt-6">
             {profile && <Profile profile={profile} />}
           </div>
           {transitions.length > 0 && (
-            <div className="grid grid-cols-fluid gap-4 pt-4 bg-slate-950">
+            <div className="grid grid-cols-fluid gap-4 p-4 bg-slate-950">
               {transitions.map((transition, index) => {
                 return (
                   <Transition
@@ -104,7 +104,7 @@ export default function Page({ params }) {
           )}
         </>
       )}
-      <div className="fixed z-10 right-0 top-0 m-2">
+      <div className="fixed z-10 right-0 top-0 my-4">
         <Logo />
       </div>
     </div>
