@@ -17,7 +17,7 @@ export async function getTransitions(user) {
       "enhanced",
       pg.raw(
         `count(case when likes.userid = ? then 1 else null end) as liked`,
-        [user]
+        [JSON.parse(cookies().get("user").value).id]
       )
     )
     .where({
