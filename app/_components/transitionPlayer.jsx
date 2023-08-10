@@ -131,10 +131,7 @@ export default function TransitionPlayer({
                   );
                   return copy;
                 });
-                return unlike(
-                  transitions[activeTransition].profile.id,
-                  transitions[activeTransition].id
-                );
+                return unlike(transitions[activeTransition].id);
               }
               setTransitions((prev) => {
                 let copy = [...prev];
@@ -144,10 +141,7 @@ export default function TransitionPlayer({
                 );
                 return copy;
               });
-              return like(
-                transitions[activeTransition].profile.id,
-                transitions[activeTransition].id
-              );
+              return like(transitions[activeTransition].id);
             }}
             className="h-10 w-10 text-white"
           >
