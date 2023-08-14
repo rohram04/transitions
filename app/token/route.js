@@ -32,6 +32,8 @@ export async function GET(req) {
       body: body,
     });
 
+    console.log(response);
+
     const tokenInfo = await response.json();
 
     cookies().set("access_token", tokenInfo.access_token);

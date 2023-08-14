@@ -18,8 +18,13 @@ export default function Transition({ transition, tracks, onClick, profile }) {
         />
         <Track percentage={0} track={tracks[transition.trackid2]} />
       </div>
-      <div className="flex h-8 w-full justify-center px-2 gap-2 text-white">
-        <span className="flex items-center gap-1 text-white">
+      <div className="grid grid-cols-3 h-8 w-full px-2 gap-2 text-white mt-2 grow">
+        <span className="invisible"></span>
+        <span className="flex justify-self-center">
+          {" "}
+          <BsFillPlayFill size="100%" className="w-8" />
+        </span>
+        <span className="flex items-center gap-1 justify-self-end">
           <span>{transition.likes}</span>
           {transition.liked === "0" ? (
             <BsSuitHeart size="100%" className="p-1 w-8" />
@@ -27,7 +32,6 @@ export default function Transition({ transition, tracks, onClick, profile }) {
             <BsSuitHeartFill size="100%" className="text-red-500 p-1 w-8" />
           )}
         </span>
-        <BsFillPlayFill size="100%" className="w-8" />
       </div>
     </div>
   );
@@ -35,8 +39,8 @@ export default function Transition({ transition, tracks, onClick, profile }) {
 
 function Track({ track, percentage }) {
   return (
-    <div className="flex flex-col w-full h-56 px-2 overflow-hidden">
-      <span class="flex-none relative basis-2/3">
+    <div className="flex flex-col w-full h-60 px-2 overflow-hidden">
+      <span class="flex-none relative grow">
         <Image
           className="object-contain"
           src={track?.album?.images[0].url}
@@ -45,11 +49,14 @@ function Track({ track, percentage }) {
         />
       </span>
       <div className="text-center text-white">
-        <div className="whitespace-nowrap truncate">{track.name}</div>
+        <div className="whitespace-nowrap truncate text-lg">{track.name}</div>
         <div className="text-sm text-white whitespace-nowrap truncate">
           {track.album.artists.map((artist, index) => {
             return index == 0 ? artist.name : ", " + artist.name;
           })}
+        </div>
+        <div className="text-sm text-white whitespace-nowrap truncate">
+          {track.album.name}
         </div>
       </div>
       <div className="w-full h-1.5 rounded-full bg-slate-600 mt-3">
