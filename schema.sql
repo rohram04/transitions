@@ -32,7 +32,7 @@ insert into likes (userId, transitionId) values (1, 7);
 
 select * from likes ;
 
-delete * from users;
+SELECT * from transitions ;
 
 alter table transitions add column date timestamp;
-select "id", "transitions"."userid", "trackid1", "trackid2", "starttime", "enhanced", count("transitionid") as likes, count(CASE when likes.userid = '1' then 1 else null end) as liked from "transitions" inner join "users" on "users"."spotifyid" = "transitions"."userid" left join "likes" on "likes"."transitionid" = "transitions"."id" group by "id";
+select "id", "transitions"."userid", "trackid1", "trackid2", "starttime", "enhanced", count("transitionid") as likes, count(CASE when likes.userid = '31ir266ygs472yyiqiv2xsfe4nre' then 1 else null end) as liked from "transitions" inner join "users" on "users"."spotifyid" = "transitions"."userid" left join "likes" on "likes"."transitionid" = "transitions"."id" group by "id";
