@@ -4,6 +4,7 @@ import { Transition } from "@headlessui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { BsCaretDownFill } from "react-icons/bs";
+import { FiUser } from "react-icons/fi";
 
 export default function Profile({ player }) {
   const [profile, setProfile] = useState({});
@@ -37,13 +38,17 @@ export default function Profile({ player }) {
         className="flex gap-2 p-2 rounded-lg bg-slate-600 hover:opacity-70 transition ease-in-out duration-300"
       >
         <span className="flex-none h-fit relative">
-          <Image
-            className="object-contain rounded-full"
-            src={profile?.images[1]?.url}
-            height={40}
-            width={40}
-            alt={profile.display_name}
-          />
+          {profile?.images?.length > 0 ? (
+            <Image
+              className="object-contain rounded-full"
+              src={profile?.images[1]?.url}
+              height={40}
+              width={40}
+              alt={profile.display_name}
+            />
+          ) : (
+            <FiUser size={40} className="bg-slate-800 p-2 rounded-full" />
+          )}
         </span>
         <div className="h-min place-self-center text-white">
           {profile.display_name}
