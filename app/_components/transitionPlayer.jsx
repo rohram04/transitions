@@ -104,7 +104,7 @@ export default function TransitionPlayer({
           : `linear-gradient(${track1Color.darkMuted}, ${track2Color.darkMuted})`,
       }}
     >
-      <div className="flex flex-col gap-4 sm:flex-row grow px-8 pt-8">
+      <div className="flex flex-col gap-4 sm:flex-row grow sm:px-8 pt-8">
         <Track
           track={tracks[transitions[activeTransition].trackid1]}
           progress={positions[transitions[activeTransition].trackid1]}
@@ -227,7 +227,7 @@ function Track({ track, progress = 0 }) {
   if (percentage < 1) percentage = 0;
 
   return (
-    <div className="flex flex-col basis-1/2 w-full px-4 gap-2 whitespace-nowrap truncate">
+    <div className="flex flex-col basis-1/2 w-full sm:px-4 gap-2 whitespace-nowrap truncate">
       <span class="flex-none relative grow">
         <Image
           className="object-contain"
@@ -236,21 +236,21 @@ function Track({ track, progress = 0 }) {
           alt={track?.album?.name}
         />
       </span>
-      <div className="text-center p-1 sm:p-4 text-white">
-        <div className="text-xl sm:text-4xl mb-1 whitespace-nowrap truncate">
+      <div className="text-center py-1 sm:py-4 text-white">
+        <div className="text-xl sm:text-base md:text-xl lg:text-3xl mb-1 whitespace-nowrap truncate">
           {track.name}
         </div>
-        <div className="sm:text-xl mb-1 whitespace-nowrap truncate">
+        <div className="lg:text-xl mb-1 whitespace-nowrap truncate">
           {track.album.artists.map((artist, index) => {
             return index == 0 ? artist.name : ", " + artist.name;
           })}
         </div>
-        <div className="sm:text-xl mb-1 whitespace-nowrap truncate">
+        <div className="lg:text-xl mb-1 whitespace-nowrap truncate">
           {track.album.name}
         </div>
       </div>
 
-      <div className="w-full h-2.5 sm:h-4 rounded-full bg-slate-600 mb-2">
+      <div className="sm:w-full w-4/5 h-2.5 sm:h-4 rounded-full bg-slate-600 mb-2 self-center">
         <div
           className="h-full rounded-full bg-white"
           style={{ width: percentage + "%" }}
