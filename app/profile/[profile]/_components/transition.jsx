@@ -49,13 +49,13 @@ function Track({ track, percentage }) {
         />
       </span>
       <div className="text-center text-white">
-        <div className="whitespace-nowrap truncate text-lg">{track.name}</div>
-        <div className="text-sm text-white whitespace-nowrap truncate">
+        <div className="whitespace-nowrap truncate text-sm">{track.name}</div>
+        <div className="text-xs text-white whitespace-nowrap truncate">
           {track.album.artists.map((artist, index) => {
             return index == 0 ? artist.name : ", " + artist.name;
           })}
         </div>
-        <div className="text-sm text-white whitespace-nowrap truncate">
+        <div className="text-xs text-white whitespace-nowrap truncate">
           {track.album.name}
         </div>
       </div>
