@@ -9,6 +9,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { like, unlike } from "./like.js";
 import { usePalette } from "react-palette";
 import { useMediaQuery } from "./mediaMatchHook";
+import { FiUser } from "react-icons/fi";
 
 export default function TransitionPlayer({
   transitions,
@@ -163,12 +164,18 @@ export default function TransitionPlayer({
           className="flex items-center"
         >
           <span className="flex-none relative w-10 h-10 sm:w-16 sm:h-16 rounded-full">
-            <Image
-              className="object-contain rounded-full"
-              src={transitions[activeTransition].profile?.images[1]?.url}
-              fill={true}
-              alt={transitions[activeTransition].profile?.display_name}
-            />
+            {transitions[activeTransition].profile?.images.length > 0 ? (
+              <Image
+                className="object-contain rounded-full"
+                src={transitions[activeTransition].profile?.images[1]?.url}
+                fill={true}
+                alt={transitions[activeTransition].profile?.display_name}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center place-content-center">
+                <FiUser className="w-full h-full p-4 bg-slate-800 rounded-full" />
+              </div>
+            )}
           </span>
           <div className="sm:text-xl ml-2 text-white">
             {transitions[activeTransition].profile?.display_name}
