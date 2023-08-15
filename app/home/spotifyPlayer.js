@@ -1,3 +1,4 @@
+import { getUser } from "./_components/profile/action";
 import getToken from "../token/getToken";
 import { useEffect, useState } from "react";
 
@@ -10,6 +11,16 @@ export default function usePlayer() {
   useEffect(() => {
     async function createPlayer() {
       const token = await getToken();
+      const profile = await getUser();
+
+      if (profile?.product !== "premium")
+        return setPlayer({
+          disconnect: () => {},
+          addListener: () => {},
+          pause: () => {},
+          disabled: true,
+        });
+
       const script = document.createElement("script");
       script.src = "https://sdk.scdn.co/spotify-player.js";
       script.async = true;

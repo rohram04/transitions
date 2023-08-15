@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useTransition, Fragment } from "react";
+import { useState, useEffect, useTransition, Fragment } from "react";
 import { getUser, logout } from "./action";
 import { Transition } from "@headlessui/react";
 import Image from "next/image";
@@ -12,7 +12,7 @@ export default function Profile({ player }) {
 
   const router = useRouter();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const getProfile = async () => {
       const profile = await getUser();
       setProfile(profile);
@@ -21,7 +21,8 @@ export default function Profile({ player }) {
     getProfile();
   }, []);
 
-  if (Object.keys(profile).length == 0) return <></>;
+  if (Object.keys(profile).length == 0)
+    return <div className="z-10 m-2 h-40"></div>;
 
   return (
     <div
@@ -82,7 +83,7 @@ export default function Profile({ player }) {
             </button>
             <button
               onClick={async () => {
-                await player.disconnect();
+                await player?.disconnect();
                 startTransition(() => logout());
               }}
               class="text-white block w-full px-4 py-2 text-left text-sm transition ease-in-out duration-300 hover:text-white/50"

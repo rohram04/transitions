@@ -9,9 +9,6 @@ import { CgSpinner } from "react-icons/cg";
 import Logo from "../_components/spotifyLogo";
 
 export default function Content() {
-  // const [player, setPlayer] = useState({});
-  // const [playerState, setPlayerState] = useState({});
-  // const [isActive, setActive] = useState(false);
   const player = usePlayer();
 
   return (

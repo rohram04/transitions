@@ -196,7 +196,10 @@ export default function TransitionPlayer({
               transitions[activeTransition].starttime
             );
           }}
-          className="h-20 w-20 sm:w-16 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
+          className={
+            "h-20 w-20 sm:w-16 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white " +
+              player.disabled && "hidden"
+          }
         >
           {playerState == null || playerState.paused ? (
             <BiPlay size="100%" />

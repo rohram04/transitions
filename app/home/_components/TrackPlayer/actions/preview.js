@@ -1,8 +1,11 @@
 "use server";
 import { cookies } from "next/headers";
 import fetch from "../../../../fetch";
+import { json } from "stream/consumers";
 
 export default async function preview(device_id, tracks, position = 0) {
+  if (JSON.parse(cookies().get("user").value).product !== "premium") return;
+
   const response2 = await fetch(
     "https://api.spotify.com/v1/me/player/play?" +
       new URLSearchParams({ device_id }),

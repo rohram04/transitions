@@ -20,6 +20,7 @@ export default function Page({ params }) {
   const router = useRouter();
   const { player, playerState, device_id } = usePlayer();
   const [profile, setProfile] = useState();
+  const [loading, setLoading] = useState(true);
   // const [player, setPlayer] = useState({});
   // const [playerState, setPlayerState] = useState({});
   // const [active, setActive] = useState(false);
@@ -29,6 +30,7 @@ export default function Page({ params }) {
       const { transitions, tracks } = await getTransitions(params.profile);
       setTransitions(transitions);
       setTracks(tracks);
+      setLoading(false);
       // await createPlayer(setPlayer, setPlayerState, setActive);
     }
     async function fetchProfile() {
@@ -40,7 +42,7 @@ export default function Page({ params }) {
     fetchProfile();
   }, [params.profile]);
 
-  if (profile === undefined || transitions.length < 1)
+  if (profile === undefined || loading)
     return (
       <div className="hd-screen w-screen flex place-content-center place-items-center bg-slate-950">
         <CgSpinner size={50} className="animate-spin h-min " />
@@ -48,7 +50,7 @@ export default function Page({ params }) {
     );
 
   return (
-    <div className="w-full hd-screen bg-slate-950">
+    <div className="w-full hd-screen bg-slate-950 flex flex-col">
       {typeof startIndex === "number" ? (
         <>
           <TransitionPlayer
@@ -85,7 +87,7 @@ export default function Page({ params }) {
           <div className="w-full flex justify-center mb-6 pt-6">
             {profile && <Profile profile={profile} />}
           </div>
-          {transitions.length > 0 && (
+          {transitions.length > 0 ? (
             <div className="grid grid-cols-fluid gap-4 p-4 bg-slate-950">
               {transitions.map((transition, index) => {
                 return (
@@ -100,6 +102,10 @@ export default function Page({ params }) {
                   />
                 );
               })}
+            </div>
+          ) : (
+            <div className="flex grow place-self-center items-center">
+              <div className="opacity-50 text-xl">No transitions uploaded</div>
             </div>
           )}
         </>
