@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense, useTransition, use } from "react";
 import Track from "./track.jsx";
 import search from "./actions/search.js";
+import Image from "next/image";
 
 export default function Search({
   onClick,
@@ -26,7 +27,7 @@ export default function Search({
   return (
     <div
       className={
-        "sm:h-80 sm:w-1/3 w-full h-full overflow-y-scroll snap-y scrollbar-hide " +
+        "sm:h-80 w-full h-full overflow-y-scroll snap-y scrollbar-hide " +
         className
       }
     >

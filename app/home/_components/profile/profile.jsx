@@ -23,7 +23,7 @@ export default function Profile({ player }) {
   }, []);
 
   if (Object.keys(profile).length == 0)
-    return <div className="z-10 m-2 h-40"></div>;
+    return <div className="z-10 m-2 h-10"></div>;
 
   return (
     <div
