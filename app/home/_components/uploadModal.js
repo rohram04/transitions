@@ -7,6 +7,7 @@ import Image from "next/image";
 
 import Search from "./Search/search";
 import Track from "./Search/track";
+import Logo from "./logo.jsx";
 
 const selectedTracksReducer = (state, action) => {
   switch (action.type) {
@@ -50,12 +51,14 @@ const selectedTracksReducer = (state, action) => {
           time: action.time,
         },
       };
+    case "CLEAR":
+      return {};
   }
 };
 
 export default function Modal({
   open = false,
-  onClose,
+  onClose: close,
   player,
   playerState,
   device_id,
@@ -67,6 +70,11 @@ export default function Modal({
   const [previewing, setPreviewing] = useState(false);
   const selectedTracksRef = useRef();
   const intervalRef = useRef();
+
+  const onClose = () => {
+    close();
+    selectedTracksDispatch({ type: "CLEAR" });
+  };
 
   useEffect(() => {
     selectedTracksRef.current = selectedTracks;
@@ -140,10 +148,11 @@ export default function Modal({
                     className={`h-full flex flex-col items-center w-full sm:w-1/3 
                         ${
                           Object.keys(selectedTracks).length == 2
-                            ? "hidden sm:block"
+                            ? " hidden sm:flex"
                             : ""
                         } `}
                   >
+                    <Logo onClose={onClose} />
                     <Search
                       onClick={(track) => {
                         selectedTracksDispatch({
@@ -166,7 +175,7 @@ export default function Modal({
                         })}
                       </div>
                     </Search>
-                    <span className="flex-none w-28 h-10 relative min-w-[70px] ml-2 block mx-4 sm:order-last order-first">
+                    <span className="w-28 h-10 relative min-w-[70px] hidden sm:block flex-none">
                       <Image
                         src="/spotify-icons-logos/logos/01_RGB/02_PNG/Spotify_Logo_RGB_White.png"
                         fill={true}
@@ -186,6 +195,7 @@ export default function Modal({
                     setPreviewing={setPreviewing}
                     player={player}
                     previewing={previewing}
+                    onClose={onClose}
                   />
                 </div>
               </Dialog.Panel>

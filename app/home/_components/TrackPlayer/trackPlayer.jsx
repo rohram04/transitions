@@ -5,6 +5,7 @@ import upload from "./actions/upload.js";
 import { BiPlay, BiPause, BiPlus } from "react-icons/bi";
 import { CgRedo } from "react-icons/cg";
 import Image from "next/image";
+import Logo from "../logo";
 // import ToastContext from "../toast";
 
 export default function TrackPlayer({
@@ -15,6 +16,7 @@ export default function TrackPlayer({
   setPreviewing,
   previewing,
   device_id,
+  onClose,
   className = "",
 }) {
   // const toast = useContext(ToastContext);
@@ -29,13 +31,9 @@ export default function TrackPlayer({
 
   return (
     <div className={"flex flex-col sm:ml-4 grow " + className}>
-      <span className="flex-none w-28 h-10 relative min-w-[70px] ml-2 sm:hidden mx-4 self-center">
-        <Image
-          src="/spotify-icons-logos/logos/01_RGB/02_PNG/Spotify_Logo_RGB_White.png"
-          fill={true}
-          className="object-contain "
-        />
-      </span>
+      <div className="fixed w-full left-0 top-0 pt-1 px-2">
+        <Logo onClose={onClose} />
+      </div>
       <div className="flex flex-col sm:flex-row grow">
         <SelectBox
           track={selectedTracks[0]}
