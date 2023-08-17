@@ -144,7 +144,7 @@ export default function TransitionPlayer({
               });
               return like(transitions[activeTransition].id);
             }}
-            className="h-10 w-10 text-white"
+            className="h-8 w-8 sm:h-10 sm:w-10 text-white"
           >
             {transitions[activeTransition].liked === "0" ? (
               <BsSuitHeart size="100%" />
@@ -173,7 +173,7 @@ export default function TransitionPlayer({
               />
             ) : (
               <div className="w-full h-full flex items-center place-content-center">
-                <FiUser className="w-full h-full p-4 bg-slate-800 rounded-full" />
+                <FiUser className="w-full h-full  p-2 sm:p-4 bg-slate-800 rounded-full" />
               </div>
             )}
           </span>

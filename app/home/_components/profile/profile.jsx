@@ -5,10 +5,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { BsCaretDownFill } from "react-icons/bs";
 import { FiUser } from "react-icons/fi";
+import Link from "next/link";
 
 export default function Profile({ player }) {
   const [profile, setProfile] = useState({});
   const [showMenu, setShowMenu] = useState(false);
+  const [privacyPolicyOpen, setPrivacyPolicyOpen] = useState(false);
   let [isPending, startTransition] = useTransition();
 
   const router = useRouter();
@@ -30,7 +32,7 @@ export default function Profile({ player }) {
       className="z-10 m-2 w-fit"
       onBlur={(event) => {
         if (event.currentTarget.contains(event.relatedTarget)) return;
-        setShowMenu(false);
+        // setShowMenu(false);
       }}
     >
       <button
@@ -91,13 +93,28 @@ export default function Profile({ player }) {
                 await player?.disconnect();
                 startTransition(() => logout());
               }}
-              class="text-white block w-full px-4 py-2 text-left text-sm transition ease-in-out duration-300 hover:text-white/50"
+              className="text-white block w-full px-4 py-2 text-left text-sm transition ease-in-out duration-300 hover:text-white/50"
               role="menuitem"
               tabindex="-1"
               id="menu-item-2"
             >
               Sign out
             </button>
+            <Link
+              // onClick={() => setPrivacyPolicyOpen(true)}
+              target="_blank"
+              href="https://audaxly.com/privacy-policy?code=lleng7de2ytnn"
+              className="text-white block w-full px-4 py-2 text-left text-sm transition ease-in-out duration-300 hover:text-white/50"
+              // role="menuitem"
+              // tabindex="-1"
+              // id="menu-item-3"
+            >
+              Privacy Policy
+            </Link>
+            {/* <PrivacyPolicyModal
+              open={privacyPolicyOpen}
+              onClose={() => setPrivacyPolicyOpen(false)}
+            /> */}
           </div>
         </div>
       </Transition>

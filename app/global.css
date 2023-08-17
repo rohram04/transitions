@@ -28,3 +28,9 @@ input[type="range"]::-webkit-slider-thumb {
   width: 0.5rem;
   border-radius: 1rem;
 }
+
+@layer base {
+  html {
+    font-family: sans-serif;
+  }
+}

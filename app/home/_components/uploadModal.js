@@ -72,6 +72,7 @@ export default function Modal({
   const intervalRef = useRef();
 
   const onClose = () => {
+    console.log("hello");
     close();
     selectedTracksDispatch({ type: "CLEAR" });
   };
