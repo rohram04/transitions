@@ -264,6 +264,7 @@ export default function TransitionPlayer({
         <Link
           href="https://www.spotify.com/us/download"
           className="text-center underline"
+          target="_blank"
         >
           Get Spotify Free
         </Link>
