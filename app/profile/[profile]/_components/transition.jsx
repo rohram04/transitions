@@ -6,7 +6,7 @@ export default function Transition({ transition, tracks, onClick, profile }) {
     <div
       onClick={onClick}
       key={transition.id}
-      className="group bg-slate-800 transition ease-in-out duration-300 rounded-lg hover:bg-slate-900 hover:cursor-pointer p-2 min-w-[24rem]"
+      className="group bg-slate-800 transition ease-in-out duration-300 rounded-lg hover:bg-slate-900 hover:cursor-pointer p-2"
     >
       <div className="flex flex-col sm:flex-row w-full gap-2">
         <Track
@@ -56,6 +56,9 @@ function Track({ track, percentage }) {
               {track.album.artists.map((artist, index) => {
                 return index == 0 ? artist.name : ", " + artist.name;
               })}
+            </div>
+            <div className="truncate text-xs text-white">
+              {track.album.name}
             </div>
           </span>
         </div>
