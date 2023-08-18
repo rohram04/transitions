@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { getProfile } from "./_components/getProfile.js";
 import { CgSpinner } from "react-icons/cg";
 import Logo from "../../_components/spotifyLogo";
+import { getUser } from "@/app/home/_components/profile/action";
 
 export default function Page({ params }) {
   const [transitions, setTransitions] = useState([]);
@@ -21,6 +22,7 @@ export default function Page({ params }) {
   const { player, playerState, device_id } = usePlayer();
   const [profile, setProfile] = useState();
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState({});
   // const [player, setPlayer] = useState({});
   // const [playerState, setPlayerState] = useState({});
   // const [active, setActive] = useState(false);
@@ -38,8 +40,14 @@ export default function Page({ params }) {
       setProfile(profile);
     }
 
+    async function fetchUser() {
+      const user = await getUser();
+      setUser(user);
+    }
+
     fetchData();
     fetchProfile();
+    fetchUser();
   }, [params.profile]);
 
   if (profile === undefined || loading)
@@ -61,6 +69,7 @@ export default function Page({ params }) {
             playerState={playerState}
             device_id={device_id}
             setTransitions={setTransitions}
+            explicitWarning={user?.country === "KR"}
           >
             <button
               onClick={() => {

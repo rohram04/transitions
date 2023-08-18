@@ -10,6 +10,7 @@ import { like, unlike } from "./like.js";
 import { usePalette } from "react-palette";
 import { useMediaQuery } from "./mediaMatchHook";
 import { FiUser } from "react-icons/fi";
+import Link from "next/link";
 
 export default function TransitionPlayer({
   transitions,
@@ -20,6 +21,7 @@ export default function TransitionPlayer({
   startIndex = 0,
   children,
   setTransitions,
+  explicitWarning,
   loadNewTransitions = () => {},
 }) {
   // const [player, playerState, device_id] = useStore((state) => [state.player, state.playerState, state.device_id])
@@ -116,7 +118,19 @@ export default function TransitionPlayer({
         />
       </div>
 
-      <div className="flex items-center mx-2 sm:m-4 sm:gap-4 justify-center">
+      <div className="flex items-center mx-2 sm:mx-4 sm:mt-4 sm:gap-4 justify-center">
+        {explicitWarning &&
+          (tracks[transitions[activeTransition].trackid1].explicit ||
+            tracks[transitions[activeTransition].trackid2].explicit) && (
+            <span className="flex-none relative w-8 h-8 sm:w-10 sm:h-10 rounded-full">
+              <Image
+                className="object-contain rounded-full"
+                src={"/spotify-icons-logos/19badge-dark.png"}
+                fill={true}
+                alt={"explicit warning"}
+              />
+            </span>
+          )}
         <div className="flex flex-col sm:flex-row sm:gap-2 items-center mr-2 sm:mr-0">
           <div className="sm:text-lg order-last sm:order-first text-white">
             {transitions[activeTransition].likes}
@@ -185,7 +199,7 @@ export default function TransitionPlayer({
           onClick={() => {
             setActiveTransition((prev) => prev - 1);
           }}
-          className="h-20 w-20 sm:w-16 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30 text-white"
+          className="h-14 w-20 sm:w-16 sm:h-14 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30 text-white"
           disabled={activeTransition === 0}
         >
           <MdNavigateBefore size="100%" />
@@ -203,7 +217,7 @@ export default function TransitionPlayer({
               transitions[activeTransition].starttime
             );
           }}
-          className="h-20 w-20 sm:w-16 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white "
+          className="h-14 w-20 sm:w-16 sm:h-14 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white "
           hidden={player.disabled}
           disabled={player.disabled}
         >
@@ -220,12 +234,39 @@ export default function TransitionPlayer({
             }
             setActiveTransition((prev) => prev + 1);
           }}
-          className="h-20 w-20 sm:w-16 sm:h-16 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30 text-white"
+          className="h-14 w-20 sm:w-16 sm:h-14 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30 text-white"
           disabled={activeTransition === transitions.length - 1}
         >
           <MdNavigateNext size="100%" />
         </button>
         {children}
+      </div>
+      <div className="flex items-center justify-center gap-2">
+        <Link
+          href={
+            playerState
+              ? playerState.track_window.current_track.uri
+              : tracks[transitions[activeTransition].trackid1].uri
+          }
+          className="text-white bottom-0 w-fit flex items-center justify-center underline"
+          target="_blank"
+        >
+          <span className="flex-none relative m-2 block min-w-[21px] min-h-[21px]">
+            <Image
+              src="/spotify-icons-logos/icons/01_RGB/02_PNG/Spotify_Icon_RGB_White.png"
+              fill={true}
+              className="object-contain"
+            />
+          </span>
+          <p>OPEN SPOTIFY</p>
+        </Link>
+        <p>or</p>
+        <Link
+          href="https://www.spotify.com/us/download"
+          className="text-center underline"
+        >
+          Get Spotify Free
+        </Link>
       </div>
     </div>
   );
@@ -246,15 +287,15 @@ function Track({ track, progress = 0 }) {
         />
       </span>
       <div className="text-center py-1 sm:py-4 text-white">
-        <div className="text-xl sm:text-base md:text-xl lg:text-3xl mb-1 whitespace-nowrap truncate">
+        <div className="text-xl sm:text-base md:text-xl lg:text-3xl sm:mb-1 whitespace-nowrap truncate">
           {track.name}
         </div>
-        <div className="lg:text-xl mb-1 whitespace-nowrap truncate">
+        <div className="lg:text-xl sm:mb-1 whitespace-nowrap truncate">
           {track.album.artists.map((artist, index) => {
             return index == 0 ? artist.name : ", " + artist.name;
           })}
         </div>
-        <div className="lg:text-xl mb-1 whitespace-nowrap truncate">
+        <div className="lg:text-xl sm:mb-1 whitespace-nowrap truncate">
           {track.album.name}
         </div>
       </div>

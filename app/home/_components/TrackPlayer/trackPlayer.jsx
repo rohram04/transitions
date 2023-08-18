@@ -83,8 +83,8 @@ export default function TrackPlayer({
             setPreviewing(false);
           }}
           className="h-10 w-10 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
-          hidden={player.disabled}
-          disabled={player.disabled}
+          hidden={player?.disabled}
+          disabled={player?.disabled}
         >
           <CgRedo size="100%" />
         </button>
@@ -99,8 +99,8 @@ export default function TrackPlayer({
             setPreviewing(true);
           }}
           className="h-12 w-12 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white "
-          hidden={player.disabled}
-          disabled={player.disabled}
+          hidden={player?.disabled}
+          disabled={player?.disabled}
         >
           {playerState == null || playerState.paused ? (
             <BiPlay size="100%" />

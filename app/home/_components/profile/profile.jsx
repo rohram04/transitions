@@ -7,7 +7,7 @@ import { BsCaretDownFill } from "react-icons/bs";
 import { FiUser } from "react-icons/fi";
 import Link from "next/link";
 
-export default function Profile({ player }) {
+export default function Profile({ player, setExplicitWarning }) {
   const [profile, setProfile] = useState({});
   const [showMenu, setShowMenu] = useState(false);
   const [privacyPolicyOpen, setPrivacyPolicyOpen] = useState(false);
@@ -19,6 +19,7 @@ export default function Profile({ player }) {
     const getProfile = async () => {
       const profile = await getUser();
       setProfile(profile);
+      setExplicitWarning(profile.country === "KR");
     };
 
     getProfile();

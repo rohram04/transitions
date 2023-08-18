@@ -10,17 +10,21 @@ import Logo from "../_components/spotifyLogo";
 
 export default function Content() {
   const player = usePlayer();
+  const [explicitWarning, setExplicitWarning] = useState(false);
 
   return (
     <>
       <div className="flex flex-row absolute z-10 top-0 w-full items-center justify-between">
         <Logo />
-        <Profile player={player.player} />
+        <Profile
+          player={player.player}
+          setExplicitWarning={setExplicitWarning}
+        />
       </div>
       {player.player != null ? (
         <>
           <div className="w-full h-full bg-slate-950">
-            <TransitionPlayer {...player}>
+            <TransitionPlayer {...player} explicitWarning={explicitWarning}>
               <Upload {...player} />
             </TransitionPlayer>
           </div>
