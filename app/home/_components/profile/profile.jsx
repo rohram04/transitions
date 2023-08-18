@@ -6,14 +6,20 @@ import { useRouter } from "next/navigation";
 import { BsCaretDownFill } from "react-icons/bs";
 import { FiUser } from "react-icons/fi";
 import Link from "next/link";
+import DeleteAccountModal from "./deleteAccountModal";
 
 export default function Profile({ player, setExplicitWarning }) {
   const [profile, setProfile] = useState({});
   const [showMenu, setShowMenu] = useState(false);
-  const [privacyPolicyOpen, setPrivacyPolicyOpen] = useState(false);
+  const [deleteAccountModalOpen, setDeleteAccountModalOpen] = useState(false);
   let [isPending, startTransition] = useTransition();
 
   const router = useRouter();
+
+  const handleLogout = async () => {
+    await player?.disconnect();
+    startTransition(() => logout());
+  };
 
   useEffect(() => {
     const getProfile = async () => {
@@ -90,10 +96,7 @@ export default function Profile({ player, setExplicitWarning }) {
               View Profile
             </button>
             <button
-              onClick={async () => {
-                await player?.disconnect();
-                startTransition(() => logout());
-              }}
+              onClick={handleLogout}
               className="text-white block w-full px-4 py-2 text-left text-sm transition ease-in-out duration-300 hover:text-white/50"
               role="menuitem"
               tabindex="-1"
@@ -112,6 +115,20 @@ export default function Profile({ player, setExplicitWarning }) {
             >
               Privacy Policy
             </Link>
+            <button
+              onClick={() => setDeleteAccountModalOpen(true)}
+              className="text-white block w-full px-4 py-2 text-left text-sm transition ease-in-out duration-300 hover:text-white/50"
+              role="menuitem"
+              tabindex="-1"
+              id="menu-item-2"
+            >
+              Delete Account
+            </button>
+            <DeleteAccountModal
+              open={deleteAccountModalOpen}
+              onClose={() => setDeleteAccountModalOpen(false)}
+              logout={handleLogout}
+            />
             {/* <PrivacyPolicyModal
               open={privacyPolicyOpen}
               onClose={() => setPrivacyPolicyOpen(false)}
