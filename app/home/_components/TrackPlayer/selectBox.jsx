@@ -2,7 +2,7 @@ import TrackDisplay from "./trackDisplay.jsx";
 
 export default function SelectBox({ track, ...props }) {
   return (
-    <div className="p-1 m-1 basis-1/2">
+    <div className="p-1 m-1 w-1/2 overflow-hidden grow w-full">
       {track ? (
         <TrackDisplay track={track} {...props} />
       ) : (

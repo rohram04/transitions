@@ -19,7 +19,9 @@ export default function TrackDisplay({
         />
       </span>
       <div className="text-center text-white whitespace-nowrap truncate">
-        <div>{track.track.name}</div>
+        <div className="text-sm whitespace-nowrap truncate">
+          {track.track.name}
+        </div>
         <div className="text-sm whitespace-nowrap truncate">
           {track.track.album.name}
         </div>

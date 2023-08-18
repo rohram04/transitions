@@ -146,7 +146,7 @@ export default function Modal({
               <Dialog.Panel className="relative transform overflow-hidden sm:rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full sm:max-w-2xl h-full">
                 <div className="bg-slate-900 p-2 px-4 pb-4 sm:p-6 sm:pb-4 h-full sm:h-fit flex flex-col sm:flex-row">
                   <div
-                    className={`h-full flex flex-col items-center w-full sm:w-1/3 
+                    className={`h-full flex flex-col items-center w-full sm:w-1/3
                         ${
                           Object.keys(selectedTracks).length == 2
                             ? " hidden sm:flex"
