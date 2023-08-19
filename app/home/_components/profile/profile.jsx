@@ -7,11 +7,13 @@ import { BsCaretDownFill } from "react-icons/bs";
 import { FiUser } from "react-icons/fi";
 import Link from "next/link";
 import DeleteAccountModal from "./deleteAccountModal";
+import PrivacyPolicyModal from "../privacyPolicy/privacyPolicy";
 
 export default function Profile({ player, setExplicitWarning }) {
   const [profile, setProfile] = useState({});
   const [showMenu, setShowMenu] = useState(false);
   const [deleteAccountModalOpen, setDeleteAccountModalOpen] = useState(false);
+  const [privacyPolicyModalOpen, setPrivacyPolicyModalOpen] = useState(false);
   let [isPending, startTransition] = useTransition();
 
   const router = useRouter();
@@ -38,8 +40,9 @@ export default function Profile({ player, setExplicitWarning }) {
     <div
       className="z-10 m-2 w-fit"
       onBlur={(event) => {
+        if (privacyPolicyModalOpen || deleteAccountModalOpen) return;
         if (event.currentTarget.contains(event.relatedTarget)) return;
-        // setShowMenu(false);
+        setShowMenu(false);
       }}
     >
       <button
@@ -104,7 +107,7 @@ export default function Profile({ player, setExplicitWarning }) {
             >
               Sign out
             </button>
-            <Link
+            {/* <Link
               // onClick={() => setPrivacyPolicyOpen(true)}
               target="_blank"
               href="https://audaxly.com/privacy-policy?code=lleng7de2ytnn"
@@ -114,7 +117,7 @@ export default function Profile({ player, setExplicitWarning }) {
               // id="menu-item-3"
             >
               Privacy Policy
-            </Link>
+            </Link> */}
             <button
               onClick={() => setDeleteAccountModalOpen(true)}
               className="text-white block w-full px-4 py-2 text-left text-sm transition ease-in-out duration-300 hover:text-white/50"
@@ -129,10 +132,20 @@ export default function Profile({ player, setExplicitWarning }) {
               onClose={() => setDeleteAccountModalOpen(false)}
               logout={handleLogout}
             />
-            {/* <PrivacyPolicyModal
-              open={privacyPolicyOpen}
-              onClose={() => setPrivacyPolicyOpen(false)}
-            /> */}
+            <button
+              onClick={() => setPrivacyPolicyModalOpen(true)}
+              className="text-white block w-full px-4 py-2 text-left text-sm transition ease-in-out duration-300 hover:text-white/50"
+              role="menuitem"
+              tabindex="-1"
+              id="menu-item-2"
+            >
+              Privacy Policy
+            </button>
+            <PrivacyPolicyModal
+              open={privacyPolicyModalOpen}
+              onClose={() => setPrivacyPolicyModalOpen(false)}
+              setDeleteAccountModalOpen={setDeleteAccountModalOpen}
+            />
           </div>
         </div>
       </Transition>
