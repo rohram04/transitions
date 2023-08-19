@@ -16,7 +16,7 @@ const generateRandomString = function (length) {
 export async function GET(request) {
   var state = generateRandomString(16);
   var scope =
-    "user-read-private user-read-email user-modify-playback-state user-read-playback-state streaming";
+    "user-read-private user-modify-playback-state user-read-playback-state user-read-currently-playing streaming";
 
   const cookieStore = cookies();
   cookies().set("state", state);
