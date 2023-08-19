@@ -69,7 +69,7 @@ export default function PrivacyPolicyModal({
                           href="https://www.spotify.com/account/apps/"
                           target="_blank"
                         >
-                          Spotify's Third Party App Page
+                          Spotify&apos;s Third Party App Page
                         </Link>{" "}
                         (Note this does not delete your account or your uploaded
                         transitions from transitions.ro-hith.com; To do so
