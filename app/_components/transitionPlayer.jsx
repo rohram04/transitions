@@ -278,7 +278,11 @@ function Track({ track, progress = 0 }) {
   if (percentage < 1) percentage = 0;
 
   return (
-    <div className="flex flex-col basis-1/2 w-full sm:px-4 gap-2 whitespace-nowrap truncate">
+    <Link
+      href={track.uri}
+      className="flex flex-col basis-1/2 w-full sm:px-4 gap-2 whitespace-nowrap truncate"
+      target="_blank"
+    >
       <span class="flex-none relative grow">
         <Image
           className="object-contain"
@@ -307,6 +311,6 @@ function Track({ track, progress = 0 }) {
           style={{ width: percentage + "%" }}
         ></div>
       </div>
-    </div>
+    </Link>
   );
 }

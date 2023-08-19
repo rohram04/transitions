@@ -3,7 +3,7 @@ import { MdClose } from "react-icons/md";
 
 export default function Logo({ onClose }) {
   return (
-    <div className="sm:hidden flex flex-row justify-between w-full mb-1">
+    <div className="md:hidden flex flex-row justify-between w-full mb-1">
       <span className="w-24 h-10 relative min-w-[70px]">
         <Image
           src="/spotify-icons-logos/logos/01_RGB/02_PNG/Spotify_Logo_RGB_White.png"

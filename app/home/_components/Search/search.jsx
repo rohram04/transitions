@@ -27,7 +27,7 @@ export default function Search({
   return (
     <div
       className={
-        "sm:h-80 w-full h-full overflow-y-scroll snap-y scrollbar-hide " +
+        "md:h-80 w-full h-full overflow-y-scroll snap-y scrollbar-hide " +
         className
       }
     >

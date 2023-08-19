@@ -133,7 +133,7 @@ export default function Modal({
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center sm:p-4 text-center sm:items-center sm:p-0 h-full sm:h-fit w-full">
+          <div className="flex min-h-full items-end justify-center md:p-4 text-center md:items-center md:p-0 h-full md:h-fit w-full">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -143,13 +143,13 @@ export default function Modal({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden sm:rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full sm:max-w-2xl h-full">
-                <div className="bg-slate-900 p-2 px-4 pb-4 sm:p-6 sm:pb-4 h-full sm:h-fit flex flex-col sm:flex-row">
+              <Dialog.Panel className="relative transform overflow-hidden md:rounded-lg bg-white text-left shadow-xl transition-all md:my-8 w-full md:max-w-4xl h-full">
+                <div className="bg-slate-900 p-2 px-4 pb-4 md:p-6 md:pb-4 h-full md:h-fit flex flex-col md:flex-row">
                   <div
-                    className={`h-full flex flex-col items-center w-full sm:w-1/3
+                    className={`h-full flex flex-col items-center w-full md:w-1/3
                         ${
                           Object.keys(selectedTracks).length == 2
-                            ? " hidden sm:flex"
+                            ? " hidden md:flex"
                             : ""
                         } `}
                   >
@@ -165,7 +165,7 @@ export default function Modal({
                       }}
                       selectDisabled={Object.keys(selectedTracks).length == 2}
                     >
-                      <div className="mb-2 sm:hidden flex flex-col gap-2">
+                      <div className="mb-2 md:hidden flex flex-col gap-2">
                         {Object.keys(selectedTracks).map((key) => {
                           return (
                             <Track
@@ -176,7 +176,7 @@ export default function Modal({
                         })}
                       </div>
                     </Search>
-                    <span className="w-28 h-10 relative min-w-[70px] hidden sm:block flex-none">
+                    <span className="w-28 h-10 relative min-w-[70px] hidden md:block flex-none mt-4">
                       <Image
                         src="/spotify-icons-logos/logos/01_RGB/02_PNG/Spotify_Logo_RGB_White.png"
                         fill={true}
@@ -187,7 +187,7 @@ export default function Modal({
                   <TrackPlayer
                     className={
                       Object.keys(selectedTracks).length !== 2 &&
-                      "hidden sm:flex"
+                      "hidden md:flex"
                     }
                     device_id={device_id}
                     playerState={playerState}

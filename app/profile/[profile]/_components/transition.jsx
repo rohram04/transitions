@@ -1,13 +1,10 @@
 import Image from "next/image";
 import { BsFillPlayFill, BsSuitHeartFill, BsSuitHeart } from "react-icons/bs";
+import Link from "next/link";
 
 export default function Transition({ transition, tracks, onClick, profile }) {
   return (
-    <div
-      onClick={onClick}
-      key={transition.id}
-      className="group bg-slate-800 transition ease-in-out duration-300 rounded-lg hover:bg-slate-900 hover:cursor-pointer p-2"
-    >
+    <div key={transition.id} className="bg-slate-800 rounded-lg p-2">
       <div className="flex flex-col sm:flex-row w-full gap-2">
         <Track
           percentage={
@@ -18,9 +15,12 @@ export default function Transition({ transition, tracks, onClick, profile }) {
         />
         <Track percentage={0} track={tracks[transition.trackid2]} />
       </div>
-      <div className="grid grid-cols-3 h-8 w-full px-2 gap-2 text-white mt-2 grow">
+      <button
+        onClick={onClick}
+        className="group grid grid-cols-3 h-8 w-full px-2 gap-2 text-white grow mt-2 sm:mt-0"
+      >
         <span className="invisible"></span>
-        <span className="flex justify-self-center">
+        <span className="flex justify-self-center transition ease-in-out duration-300 group-hover:opacity-50 cursor-pointer">
           {" "}
           <BsFillPlayFill size="100%" className="w-8" />
         </span>
@@ -32,7 +32,7 @@ export default function Transition({ transition, tracks, onClick, profile }) {
             <BsSuitHeartFill size="100%" className="text-red-500 p-1 w-8" />
           )}
         </span>
-      </div>
+      </button>
     </div>
   );
 }
@@ -40,7 +40,11 @@ export default function Transition({ transition, tracks, onClick, profile }) {
 function Track({ track, percentage }) {
   return (
     <>
-      <div className="sm:hidden transition ease-in-out duration-300 bg-slate-700 rounded-lg group-hover:bg-slate-800">
+      <Link
+        href={track.uri}
+        target="_blank"
+        className="sm:hidden transition ease-in-out duration-300 bg-slate-700 rounded-lg group-hover:bg-slate-800"
+      >
         <div className=" flex w-full h-full place-items-center">
           <span className="flex-none w-20 h-20 relative">
             <Image
@@ -68,8 +72,12 @@ function Track({ track, percentage }) {
             style={{ width: percentage + "%" }}
           ></div>
         </div>
-      </div>
-      <div className="flex-col w-full h-60 px-2 overflow-hidden hidden sm:flex">
+      </Link>
+      <Link
+        href={track.uri}
+        target="_blank"
+        className="flex-col w-full h-60 px-2 overflow-hidden hidden sm:flex rounded-lg hover:bg-slate-700 p-4"
+      >
         <span class="flex-none relative grow">
           <Image
             className="object-contain"
@@ -95,7 +103,7 @@ function Track({ track, percentage }) {
             style={{ width: percentage + "%" }}
           ></div>
         </div>
-      </div>
+      </Link>
     </>
   );
 }

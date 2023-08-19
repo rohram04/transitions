@@ -30,7 +30,7 @@ export default function TrackPlayer({
   };
 
   return (
-    <div className={"flex flex-col sm:pl-4 grow sm:w-2/3 " + className}>
+    <div className={"flex flex-col md:pl-4 grow md:w-2/3 " + className}>
       <div className="fixed w-full left-0 top-0 pt-2 px-4 z-20">
         <Logo onClose={onClose} />
       </div>
