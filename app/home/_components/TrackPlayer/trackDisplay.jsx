@@ -11,11 +11,7 @@ export default function TrackDisplay({
 }) {
   return (
     <div className="h-full rounded-xl flex flex-col">
-      <Link
-        href={track.track.uri}
-        target="_blank"
-        className="flex flex-col grow"
-      >
+      <div className="flex flex-col grow">
         <span class="flex-none relative grow">
           <Image
             className="object-contain p-2"
@@ -24,20 +20,23 @@ export default function TrackDisplay({
             alt={track?.track?.album?.name}
           />
         </span>
-        <div className="text-center text-white whitespace-nowrap truncate">
-          <div className="text-sm whitespace-nowrap truncate">
+        <div
+          tabIndex={0}
+          className="text-center text-white whitespace-nowrap truncate group focus:overflow-y-scroll focus:whitespace-normal scrollbar-hide"
+        >
+          <div className="text-sm whitespace-nowrap truncate group-focus:whitespace-normal group-focus:overflow-none">
             {track.track.name}
           </div>
-          <div className="text-sm whitespace-nowrap truncate">
+          <div className="text-sm whitespace-nowrap truncate group-focus:whitespace-normal group-focus:overflow-none">
             {track.track.album.name}
           </div>
-          <div className="text-sm whitespace-nowrap truncate">
+          <div className="text-sm whitespace-nowrap truncate group-focus:whitespace-normal group-focus:overflow-none">
             {track.track.album.artists.map((artist, index) => {
               return index == 0 ? artist.name : ", " + artist.name;
             })}
           </div>
         </div>
-      </Link>
+      </div>
       {/* <button
         onClick={togglePlay}
         className="place-self-center hover:bg-slate-700 bg-slate-800 rounded-full w-fit py-2 px-3 m-1 mx-2"

@@ -11,6 +11,7 @@ import { usePalette } from "react-palette";
 import { useMediaQuery } from "./mediaMatchHook";
 import { FiUser } from "react-icons/fi";
 import Link from "next/link";
+import Footer from "./spotifyFooter";
 
 export default function TransitionPlayer({
   transitions,
@@ -241,34 +242,13 @@ export default function TransitionPlayer({
         </button>
         {children}
       </div>
-      <div className="flex items-center justify-center gap-2">
-        <Link
-          href={
-            playerState
-              ? playerState.track_window.current_track.uri
-              : tracks[transitions[activeTransition].trackid1].uri
-          }
-          className="text-white bottom-0 w-fit flex items-center justify-center underline"
-          target="_blank"
-        >
-          <span className="flex-none relative m-2 block min-w-[21px] min-h-[21px]">
-            <Image
-              src="/spotify-icons-logos/icons/01_RGB/02_PNG/Spotify_Icon_RGB_White.png"
-              fill={true}
-              className="object-contain"
-            />
-          </span>
-          <p>OPEN SPOTIFY</p>
-        </Link>
-        <p>or</p>
-        <Link
-          href="https://www.spotify.com/us/download"
-          className="text-center underline"
-          target="_blank"
-        >
-          Get Spotify Free
-        </Link>
-      </div>
+      <Footer
+        href={
+          playerState
+            ? playerState.track_window.current_track.uri
+            : tracks[transitions[activeTransition].trackid1].uri
+        }
+      />
     </div>
   );
 }
@@ -278,11 +258,7 @@ function Track({ track, progress = 0 }) {
   if (percentage < 1) percentage = 0;
 
   return (
-    <Link
-      href={track.uri}
-      className="flex flex-col basis-1/2 w-full sm:px-4 gap-2 whitespace-nowrap truncate"
-      target="_blank"
-    >
+    <div className="flex flex-col basis-1/2 w-full sm:px-4 gap-2 whitespace-nowrap truncate">
       <span class="flex-none relative grow">
         <Image
           className="object-contain"
@@ -291,16 +267,19 @@ function Track({ track, progress = 0 }) {
           alt={track?.album?.name}
         />
       </span>
-      <div className="text-center py-1 sm:py-4 text-white">
-        <div className="text-xl sm:text-base md:text-xl lg:text-3xl sm:mb-1 whitespace-nowrap truncate">
+      <div
+        className="text-center py-1 sm:py-4 text-white group focus:overflow-y-scroll scrollbar-hide "
+        tabIndex={0}
+      >
+        <div className="text-xl sm:text-base md:text-xl lg:text-3xl sm:mb-1 whitespace-nowrap truncate group-focus:overflow-none group-focus:whitespace-normal">
           {track.name}
         </div>
-        <div className="lg:text-xl sm:mb-1 whitespace-nowrap truncate">
+        <div className="lg:text-xl sm:mb-1 whitespace-nowrap truncate group-focus:overflow-none group-focus:whitespace-normal">
           {track.album.artists.map((artist, index) => {
             return index == 0 ? artist.name : ", " + artist.name;
           })}
         </div>
-        <div className="lg:text-xl sm:mb-1 whitespace-nowrap truncate">
+        <div className="lg:text-xl sm:mb-1 whitespace-nowrap truncate group-focus:overflow-none group-focus:whitespace-normal">
           {track.album.name}
         </div>
       </div>
@@ -311,6 +290,6 @@ function Track({ track, progress = 0 }) {
           style={{ width: percentage + "%" }}
         ></div>
       </div>
-    </Link>
+    </div>
   );
 }

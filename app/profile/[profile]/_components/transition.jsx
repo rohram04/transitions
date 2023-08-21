@@ -4,7 +4,11 @@ import Link from "next/link";
 
 export default function Transition({ transition, tracks, onClick, profile }) {
   return (
-    <div key={transition.id} className="bg-slate-800 rounded-lg p-2">
+    <div
+      onClick={onClick}
+      key={transition.id}
+      className="bg-slate-800 transition ease-in-out duration-300 hover:bg-slate-700 rounded-lg p-2 cursor-pointer"
+    >
       <div className="flex flex-col sm:flex-row w-full gap-2">
         <Track
           percentage={
@@ -15,10 +19,7 @@ export default function Transition({ transition, tracks, onClick, profile }) {
         />
         <Track percentage={0} track={tracks[transition.trackid2]} />
       </div>
-      <button
-        onClick={onClick}
-        className="group grid grid-cols-3 h-8 w-full px-2 gap-2 text-white grow mt-2 sm:mt-0"
-      >
+      <div className="group grid grid-cols-3 h-8 w-full px-2 gap-2 text-white grow mt-2 sm:mt-0">
         <span className="invisible"></span>
         <span className="flex justify-self-center transition ease-in-out duration-300 group-hover:opacity-50 cursor-pointer">
           {" "}
@@ -32,7 +33,7 @@ export default function Transition({ transition, tracks, onClick, profile }) {
             <BsSuitHeartFill size="100%" className="text-red-500 p-1 w-8" />
           )}
         </span>
-      </button>
+      </div>
     </div>
   );
 }
@@ -40,11 +41,7 @@ export default function Transition({ transition, tracks, onClick, profile }) {
 function Track({ track, percentage }) {
   return (
     <>
-      <Link
-        href={track.uri}
-        target="_blank"
-        className="sm:hidden transition ease-in-out duration-300 bg-slate-700 rounded-lg group-hover:bg-slate-800"
-      >
+      <div className="sm:hidden bg-slate-700 rounded-lg">
         <div className=" flex w-full h-full place-items-center">
           <span className="flex-none w-20 h-20 relative">
             <Image
@@ -72,12 +69,8 @@ function Track({ track, percentage }) {
             style={{ width: percentage + "%" }}
           ></div>
         </div>
-      </Link>
-      <Link
-        href={track.uri}
-        target="_blank"
-        className="flex-col w-full h-60 px-2 overflow-hidden hidden sm:flex rounded-lg hover:bg-slate-700 p-4"
-      >
+      </div>
+      <div className="flex-col w-full h-60 px-2 overflow-hidden hidden sm:flex rounded-lg p-4">
         <span class="flex-none relative grow">
           <Image
             className="object-contain"
@@ -103,7 +96,7 @@ function Track({ track, percentage }) {
             style={{ width: percentage + "%" }}
           ></div>
         </div>
-      </Link>
+      </div>
     </>
   );
 }
