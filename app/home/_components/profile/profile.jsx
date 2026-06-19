@@ -9,7 +9,7 @@ import Link from "next/link";
 import DeleteAccountModal from "./deleteAccountModal";
 import PrivacyPolicyModal from "../privacyPolicy/privacyPolicy";
 
-export default function Profile({ player, setExplicitWarning }) {
+export default function Profile({ setExplicitWarning }) {
   const [profile, setProfile] = useState({});
   const [showMenu, setShowMenu] = useState(false);
   const [deleteAccountModalOpen, setDeleteAccountModalOpen] = useState(false);
@@ -18,8 +18,7 @@ export default function Profile({ player, setExplicitWarning }) {
 
   const router = useRouter();
 
-  const handleLogout = async () => {
-    await player?.disconnect();
+  const handleLogout = () => {
     startTransition(() => logout());
   };
 
@@ -27,7 +26,7 @@ export default function Profile({ player, setExplicitWarning }) {
     const getProfile = async () => {
       const profile = await getUser();
       setProfile(profile);
-      setExplicitWarning(profile.country === "KR");
+      setExplicitWarning(false);
     };
 
     getProfile();
@@ -50,10 +49,10 @@ export default function Profile({ player, setExplicitWarning }) {
         className="flex gap-2 p-2 rounded-lg bg-slate-600 hover:opacity-70 transition ease-in-out duration-300"
       >
         <span className="flex-none h-fit relative">
-          {profile?.images?.length > 0 ? (
+          {profile?.avatarurl ? (
             <Image
               className="object-contain rounded-full"
-              src={profile?.images[1]?.url}
+              src={profile?.avatarurl}
               height={40}
               width={40}
               alt={profile.display_name}
@@ -87,8 +86,7 @@ export default function Profile({ player, setExplicitWarning }) {
         >
           <div class="py-1" role="none">
             <button
-              onClick={async () => {
-                await player?.disconnect();
+              onClick={() => {
                 router.push(`/profile/${profile.id}`);
               }}
               class="text-white block px-4 py-2 text-sm text-left transition ease-in-out duration-300 hover:text-white/50"
