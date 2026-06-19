@@ -11,6 +11,7 @@
   "dependencies": {
     "@headlessui/react": "^1.7.15",
     "autoprefixer": "10.4.14",
+    "cheerio": "^1.2.0",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.10",
     "knex": "^2.5.1",

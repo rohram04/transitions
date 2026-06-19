@@ -16,7 +16,7 @@ const nextConfig = {
   },
   experimental: {
     serverActions: true,
-    serverComponentsExternalPackages: ["knex", "pg"],
+    serverComponentsExternalPackages: ["knex", "pg", "yt-search", "cheerio"],
   },
 };
 

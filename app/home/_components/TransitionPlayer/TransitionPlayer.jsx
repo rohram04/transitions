@@ -7,6 +7,7 @@ import { CgSpinner } from "react-icons/cg";
 export default function TransitionPlayer(props) {
   const [transitions, setTransitions] = useState([]);
   const [tracks, setTracks] = useState({});
+  const [loading, setLoading] = useState(true);
 
   async function fetchData() {
     const { transitions: newTransitions, tracks: newTracks } =
@@ -21,13 +22,21 @@ export default function TransitionPlayer(props) {
   }
 
   useEffect(() => {
-    fetchData();
+    fetchData().finally(() => setLoading(false));
   }, []);
 
-  if (transitions.length < 1)
+  if (loading)
     return (
       <div className="h-full w-full flex place-content-center place-items-center">
         <CgSpinner size={50} className="animate-spin h-min " />
+      </div>
+    );
+
+  if (transitions.length < 1)
+    return (
+      <div className="h-full w-full flex flex-col gap-4 place-content-center place-items-center text-white">
+        <p className="text-slate-400">No transitions yet. Upload the first one!</p>
+        {props.children}
       </div>
     );
 

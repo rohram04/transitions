@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, cloneElement } from "react";
 import { BiPlay, BiPause } from "react-icons/bi";
 import { BsSuitHeart, BsSuitHeartFill } from "react-icons/bs";
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
@@ -22,57 +22,87 @@ export default function TransitionPlayer({
 }) {
   const [activeTransition, setActiveTransition] = useState(startIndex);
   const [playingTrackIndex, setPlayingTrackIndex] = useState(null);
+  const [localPlaying, setLocalPlaying] = useState(false);
+  const [trackTime, setTrackTime] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
 
   const activeTransitionRef = useRef(activeTransition);
   const playingTrackIndexRef = useRef(playingTrackIndex);
   const transitionsRef = useRef(transitions);
+  const ytPlayerRef = useRef(ytPlayer);
+  const trackTimeIntervalRef = useRef(null);
 
   useEffect(() => { activeTransitionRef.current = activeTransition; }, [activeTransition]);
   useEffect(() => { playingTrackIndexRef.current = playingTrackIndex; }, [playingTrackIndex]);
   useEffect(() => { transitionsRef.current = transitions; }, [transitions]);
+  useEffect(() => { ytPlayerRef.current = ytPlayer; }, [ytPlayer]);
 
-  const t = transitions[activeTransition];
-  const {
-    data: track1Color,
-  } = usePalette(tracks[t.trackid1]?.album?.images[0]?.url || "");
-  const { data: track2Color } = usePalette(
-    tracks[t.trackid2]?.album?.images[0]?.url || ""
-  );
-  const sm = useMediaQuery("(min-width: 640px)");
+  const stopTimeTracking = () => {
+    clearInterval(trackTimeIntervalRef.current);
+    trackTimeIntervalRef.current = null;
+  };
 
-  // Auto-play track1 whenever active transition changes
-  useEffect(() => {
-    if (!ytPlayer?.play) return;
-    const tr = transitions[activeTransition];
-    if (tr?.youtubevideoid1) {
-      ytPlayer.play(tr.youtubevideoid1, (tr.starttime || 0) / 1000);
-      setPlayingTrackIndex(0);
-    }
-  }, [activeTransition]);
+  const startTimeTracking = (startMs = 0) => {
+    stopTimeTracking();
+    setTrackTime(startMs);
+    trackTimeIntervalRef.current = setInterval(() => {
+      const player = ytPlayerRef.current;
+      if (player?.getOwner() === "main") {
+        setTrackTime(player.getTime());
+      }
+    }, 500);
+  };
 
-  // Register onEnded: track1 end → play track2; track2 end → next transition
-  useEffect(() => {
-    if (!ytPlayer?.setOnEnded) return;
-    ytPlayer.setOnEnded(() => {
+  // Re-register onEnded each time we take ownership of the player.
+  const registerOnEnded = () => {
+    ytPlayerRef.current?.setOnEnded(() => {
+      const player = ytPlayerRef.current;
       const tr = transitionsRef.current[activeTransitionRef.current];
       if (playingTrackIndexRef.current === 0 && tr?.youtubevideoid2) {
-        ytPlayer.play(tr.youtubevideoid2, 0);
+        player.play(tr.youtubevideoid2, 0);
+        playingTrackIndexRef.current = 1;
         setPlayingTrackIndex(1);
+        setTrackTime(0);
       } else {
+        stopTimeTracking();
+        setLocalPlaying(false);
+        setPlayingTrackIndex(null);
         if (activeTransitionRef.current < transitionsRef.current.length - 1) {
           setActiveTransition((prev) => prev + 1);
         }
       }
     });
+  };
+
+  // Auto-play track 1 whenever active transition changes.
+  useEffect(() => {
+    if (!ytPlayer?.play) return;
+    const tr = transitions[activeTransition];
+    if (tr?.youtubevideoid1) {
+      ytPlayer.setOwner("main");
+      registerOnEnded();
+      ytPlayer.play(tr.youtubevideoid1, (tr.starttime || 0) / 1000);
+      playingTrackIndexRef.current = 0;
+      setPlayingTrackIndex(0);
+      setLocalPlaying(true);
+      startTimeTracking(tr.starttime || 0);
+    }
+  }, [activeTransition]);
+
+  useEffect(() => {
+    return () => stopTimeTracking();
   }, []);
 
-  // Derive progress from ytPlayer.currentTime
+  const t = transitions[activeTransition];
+  const { data: track1Color } = usePalette(tracks[t.trackid1]?.album?.images[0]?.url || "");
+  const { data: track2Color } = usePalette(tracks[t.trackid2]?.album?.images[0]?.url || "");
+  const sm = useMediaQuery("(min-width: 640px)");
+
   const track1Progress =
-    playingTrackIndex === 0 ? ytPlayer?.currentTime * 1000 : t.starttime || 0;
+    playingTrackIndex === 0 ? trackTime : tracks[t.trackid1]?.duration_ms ?? 0;
   const track2Progress =
-    playingTrackIndex === 1 ? ytPlayer?.currentTime * 1000 : 0;
+    playingTrackIndex === 1 ? trackTime : 0;
 
   return (
     <div
@@ -84,14 +114,8 @@ export default function TransitionPlayer({
       }}
     >
       <div className="flex flex-col gap-4 sm:flex-row grow sm:px-8 pt-8">
-        <Track
-          track={tracks[t.trackid1]}
-          progress={track1Progress}
-        />
-        <Track
-          track={tracks[t.trackid2]}
-          progress={track2Progress}
-        />
+        <Track track={tracks[t.trackid1]} progress={track1Progress} />
+        <Track track={tracks[t.trackid2]} progress={track2Progress} />
       </div>
 
       <div className="flex items-center mx-2 sm:mx-4 sm:mt-4 sm:gap-4 justify-center">
@@ -107,30 +131,26 @@ export default function TransitionPlayer({
           </div>
           <button
             onClick={() => {
-              if (t.liked === "1") {
+              if (Number(t.liked) === 1) {
                 setTransitions((prev) => {
                   let copy = [...prev];
-                  copy[activeTransition].liked = "0";
-                  copy[activeTransition].likes = String(
-                    Number(copy[activeTransition].likes) - 1
-                  );
+                  copy[activeTransition].liked = 0;
+                  copy[activeTransition].likes = String(Number(copy[activeTransition].likes) - 1);
                   return copy;
                 });
                 return unlike(t.id);
               }
               setTransitions((prev) => {
                 let copy = [...prev];
-                copy[activeTransition].liked = "1";
-                copy[activeTransition].likes = String(
-                  Number(copy[activeTransition].likes) + 1
-                );
+                copy[activeTransition].liked = 1;
+                copy[activeTransition].likes = String(Number(copy[activeTransition].likes) + 1);
                 return copy;
               });
               return like(t.id);
             }}
             className="h-8 w-8 sm:h-10 sm:w-10 text-white"
           >
-            {t.liked === "0" ? (
+            {Number(t.liked) === 0 ? (
               <BsSuitHeart size="100%" />
             ) : (
               <BsSuitHeartFill size="100%" className="text-red-500" />
@@ -139,9 +159,7 @@ export default function TransitionPlayer({
         </div>
         <button
           disabled={pathname === `/profile/${t.profile?.id}`}
-          onClick={() => {
-            router.push(`/profile/${t.profile?.id}`);
-          }}
+          onClick={() => router.push(`/profile/${t.profile?.id}`)}
           className="flex items-center"
         >
           <span className="flex-none relative w-10 h-10 sm:w-16 sm:h-16 rounded-full">
@@ -158,9 +176,7 @@ export default function TransitionPlayer({
               </div>
             )}
           </span>
-          <div className="sm:text-xl ml-2 text-white">
-            {t.profile?.display_name}
-          </div>
+          <div className="sm:text-xl ml-2 text-white">{t.profile?.display_name}</div>
         </button>
         <button
           onClick={() => setActiveTransition((prev) => prev - 1)}
@@ -172,19 +188,26 @@ export default function TransitionPlayer({
         <button
           onClick={() => {
             if (!ytPlayer) return;
-            if (ytPlayer.isPlaying) {
+            if (localPlaying) {
               ytPlayer.pause();
+              stopTimeTracking();
+              setLocalPlaying(false);
             } else {
               const tr = transitions[activeTransition];
               if (tr?.youtubevideoid1) {
+                ytPlayer.setOwner("main");
+                registerOnEnded();
                 ytPlayer.play(tr.youtubevideoid1, (tr.starttime || 0) / 1000);
+                playingTrackIndexRef.current = 0;
                 setPlayingTrackIndex(0);
+                setLocalPlaying(true);
+                startTimeTracking(tr.starttime || 0);
               }
             }
           }}
           className="h-14 w-20 sm:w-16 sm:h-14 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
         >
-          {ytPlayer?.isPlaying ? <BiPause size="100%" /> : <BiPlay size="100%" />}
+          {localPlaying ? <BiPause size="100%" /> : <BiPlay size="100%" />}
         </button>
         <button
           onClick={async () => {
@@ -198,7 +221,17 @@ export default function TransitionPlayer({
         >
           <MdNavigateNext size="100%" />
         </button>
-        {children}
+        {/* Pass ownership callbacks into the upload modal */}
+        {cloneElement(children, {
+          onModalPreviewStart: () => {
+            stopTimeTracking();
+            setLocalPlaying(false);
+          },
+          onModalPreviewEnd: () => {
+            ytPlayer?.setOwner(null);
+            ytPlayer?.setOnEnded(null);
+          },
+        })}
       </div>
       <Footer />
     </div>

@@ -57,7 +57,7 @@ const selectedTracksReducer = (state, action) => {
   }
 };
 
-export default function Modal({ open = false, onClose: close, ytPlayer }) {
+export default function Modal({ open = false, onClose: close, ytPlayer, onModalPreviewStart, onModalPreviewEnd }) {
   const [selectedTracks, selectedTracksDispatch] = useReducer(
     selectedTracksReducer,
     {}
@@ -70,19 +70,10 @@ export default function Modal({ open = false, onClose: close, ytPlayer }) {
     selectedTracksRef.current = selectedTracks;
   }, [selectedTracks]);
 
-  // Sync ytPlayer.currentTime → selected track position
-  useEffect(() => {
-    if (playingKey === null || !ytPlayer?.isPlaying) return;
-    selectedTracksDispatch({
-      type: "POSITION",
-      key: playingKey,
-      position: ytPlayer.currentTime * 1000,
-    });
-  }, [ytPlayer?.currentTime]);
-
   const onClose = () => {
     close();
     ytPlayer?.pause();
+    onModalPreviewEnd?.();
     setPreviewing(false);
     setPlayingKey(null);
     selectedTracksDispatch({ type: "CLEAR" });
@@ -152,6 +143,7 @@ export default function Modal({ open = false, onClose: close, ytPlayer }) {
                     playingKey={playingKey}
                     setPlayingKey={setPlayingKey}
                     onClose={onClose}
+                    onModalPreviewStart={onModalPreviewStart}
                   />
                 </div>
               </Dialog.Panel>

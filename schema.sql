@@ -1,56 +1,52 @@
-CREATE TABLE Users (
-	spotifyId TEXT PRIMARY key,
-	displayName TEXT
+-- Transitions schema (Phase 1: iTunes/YouTube + GitHub OAuth)
+-- Safe to run on a fresh database or an existing one (idempotent).
+-- Note: `spotifyid` is kept as the user PK column name for backwards
+-- compatibility with existing rows; it now holds the GitHub user id.
+
+CREATE TABLE IF NOT EXISTS users (
+  spotifyid   TEXT PRIMARY KEY,
+  displayname TEXT,
+  avatarurl   TEXT
 );
 
-CREATE TABLE Transitions (
-	id SERIAL PRIMARY KEY,
-	userId TEXT REFERENCES Users (spotifyId) ON DELETE CASCADE, 
-	trackId1 VARCHAR(62),
-	trackId2 VARCHAR(62),
-	startTime INT,
-	enhanced text,
-	date TIMESTAMP,
+CREATE TABLE IF NOT EXISTS transitions (
+  id              SERIAL PRIMARY KEY,
+  userid          TEXT REFERENCES users (spotifyid) ON DELETE CASCADE,
+  trackid1        VARCHAR(62),
+  trackid2        VARCHAR(62),
+  starttime       INT,
+  enhanced        TEXT,
+  date            TIMESTAMP,
+  track1json      JSONB,
+  track2json      JSONB,
+  youtubevideoid1 TEXT,
+  youtubevideoid2 TEXT
 );
 
-CREATE TABLE Likes (
-	userId TEXT,
-	transitionId INTEGER REFERENCES Transitions (id) ON DELETE CASCADE,
-	PRIMARY KEY (userId, transitionId)
+CREATE TABLE IF NOT EXISTS likes (
+  userid       TEXT,
+  transitionid INTEGER REFERENCES transitions (id) ON DELETE CASCADE,
+  PRIMARY KEY (userid, transitionid)
 );
 
-CREATE TABLE Comments (
-	id SERIAL PRIMARY KEY,
-	userId TEXT REFERENCES Users (spotifyId) ON DELETE CASCADE,
-	TransitionId INTEGER REFERENCES Transitions (id) ON DELETE CASCADE,
-	comment TEXT
+CREATE TABLE IF NOT EXISTS comments (
+  id           SERIAL PRIMARY KEY,
+  userid       TEXT REFERENCES users (spotifyid) ON DELETE CASCADE,
+  transitionid INTEGER REFERENCES transitions (id) ON DELETE CASCADE,
+  comment      TEXT
 );
-
-insert into likes (userId, transitionId) values (1, 7);
-
-select * from likes ;
-
-SELECT * from transitions ;
-
--- Phase 1 migration
-ALTER TABLE users ADD COLUMN IF NOT EXISTS avatarurl TEXT;
-ALTER TABLE transitions ADD COLUMN IF NOT EXISTS track1json JSONB;
-ALTER TABLE transitions ADD COLUMN IF NOT EXISTS track2json JSONB;
-ALTER TABLE transitions ADD COLUMN IF NOT EXISTS youtubevideoid1 TEXT;
-ALTER TABLE transitions ADD COLUMN IF NOT EXISTS youtubevideoid2 TEXT;
 
 CREATE TABLE IF NOT EXISTS youtube_cache (
   fingerprint TEXT PRIMARY KEY,
-  videoid TEXT NOT NULL,
-  createdat TIMESTAMP DEFAULT NOW()
+  videoid     TEXT NOT NULL,
+  createdat   TIMESTAMP DEFAULT NOW()
 );
 
-alter table transitions 
-drop constraint transitions_userid_fkey,
-add constraint transitions_userid_fkey
-	foreign key (userid)
-	references users(spotifyid)
-	on delete cascade;
-
-alter table transitions add column date timestamp;
-select "id", "transitions"."userid", "trackid1", "trackid2", "starttime", "enhanced", count("transitionid") as likes, count(CASE when likes.userid = '31ir266ygs472yyiqiv2xsfe4nre' then 1 else null end) as liked from "transitions" inner join "users" on "users"."spotifyid" = "transitions"."userid" left join "likes" on "likes"."transitionid" = "transitions"."id" group by "id";
+-- ── Migration for databases created before Phase 1 ──────────────────
+-- These are no-ops on a fresh DB (columns already created above).
+ALTER TABLE users       ADD COLUMN IF NOT EXISTS avatarurl       TEXT;
+ALTER TABLE transitions ADD COLUMN IF NOT EXISTS track1json      JSONB;
+ALTER TABLE transitions ADD COLUMN IF NOT EXISTS track2json      JSONB;
+ALTER TABLE transitions ADD COLUMN IF NOT EXISTS youtubevideoid1 TEXT;
+ALTER TABLE transitions ADD COLUMN IF NOT EXISTS youtubevideoid2 TEXT;
+ALTER TABLE transitions ADD COLUMN IF NOT EXISTS date            TIMESTAMP;
