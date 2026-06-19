@@ -1,21 +1,15 @@
-import Image from "next/image";
-
 export default function Logo() {
   return (
     <>
-      <span className="flex-none w-28 h-10 relative min-w-[70px] ml-2 hidden sm:block mx-4">
-        <Image
-          src="/spotify-icons-logos/logos/01_RGB/02_PNG/Spotify_Logo_RGB_White.png"
-          fill={true}
-          className="object-contain "
-        />
+      <span className="hidden sm:flex items-center ml-4 mx-4 h-10">
+        <span className="text-white text-xl font-bold tracking-widest uppercase">
+          Transitions
+        </span>
       </span>
-      <span className="flex-none h-10 relative w-10 m-2 block sm:hidden min-w-[21px] min-h-[21px]">
-        <Image
-          src="/spotify-icons-logos/icons/01_RGB/02_PNG/Spotify_Icon_RGB_White.png"
-          fill={true}
-          className="object-contain"
-        />
+      <span className="flex sm:hidden items-center ml-2 h-10">
+        <span className="text-white text-base font-bold tracking-widest uppercase">
+          T
+        </span>
       </span>
     </>
   );

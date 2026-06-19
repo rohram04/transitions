@@ -2,24 +2,16 @@
 const nextConfig = {
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "i.scdn.co",
-        port: "",
-        pathname: "/image/**",
-      },
-      {
-        protocol: "http",
-        hostname: "iconizer.net",
-        port: "",
-        pathname: "/files/**",
-      },
-      {
-        protocol: "https",
-        hostname: "platform-lookaside.fbsbx.com",
-        port: "",
-        pathname: "/platform/profilepic/**",
-      },
+      // Apple iTunes / MusicKit artwork (is1 through is5)
+      { protocol: "https", hostname: "is1-ssl.mzstatic.com" },
+      { protocol: "https", hostname: "is2-ssl.mzstatic.com" },
+      { protocol: "https", hostname: "is3-ssl.mzstatic.com" },
+      { protocol: "https", hostname: "is4-ssl.mzstatic.com" },
+      { protocol: "https", hostname: "is5-ssl.mzstatic.com" },
+      // GitHub avatars
+      { protocol: "https", hostname: "avatars.githubusercontent.com" },
+      // Keep iconizer for any misc images
+      { protocol: "http", hostname: "iconizer.net", pathname: "/files/**" },
     ],
   },
   experimental: {
