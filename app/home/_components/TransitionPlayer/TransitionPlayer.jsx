@@ -2,7 +2,6 @@ import { useState, useEffect, Suspense } from "react";
 import getTransitions from "./getTransitions.js";
 import Transition from "./Transition.jsx";
 import Player from "../../../_components/transitionPlayer";
-import { getUser } from "../profile/action";
 import { CgSpinner } from "react-icons/cg";
 
 export default function TransitionPlayer(props) {
@@ -10,10 +9,8 @@ export default function TransitionPlayer(props) {
   const [tracks, setTracks] = useState({});
 
   async function fetchData() {
-    const user = await getUser();
     const { transitions: newTransitions, tracks: newTracks } =
       await getTransitions(
-        user.id,
         transitions.map((transition) => transition.id)
       );
     setTransitions((transitions) => [...transitions, ...newTransitions]);

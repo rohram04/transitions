@@ -32,6 +32,19 @@ select * from likes ;
 
 SELECT * from transitions ;
 
+-- Phase 1 migration
+ALTER TABLE users ADD COLUMN IF NOT EXISTS avatarurl TEXT;
+ALTER TABLE transitions ADD COLUMN IF NOT EXISTS track1json JSONB;
+ALTER TABLE transitions ADD COLUMN IF NOT EXISTS track2json JSONB;
+ALTER TABLE transitions ADD COLUMN IF NOT EXISTS youtubevideoid1 TEXT;
+ALTER TABLE transitions ADD COLUMN IF NOT EXISTS youtubevideoid2 TEXT;
+
+CREATE TABLE IF NOT EXISTS youtube_cache (
+  fingerprint TEXT PRIMARY KEY,
+  videoid TEXT NOT NULL,
+  createdat TIMESTAMP DEFAULT NOW()
+);
+
 alter table transitions 
 drop constraint transitions_userid_fkey,
 add constraint transitions_userid_fkey

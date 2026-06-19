@@ -1,60 +1,54 @@
 "use server";
-import { cookies } from "next/headers";
-import pg from "../../../connection";
-import fetch from "../../../fetch";
+import pg from "@/app/connection";
+import { getUser } from "@/app/home/_components/profile/action";
 
-export async function getTransitions(user) {
+export async function getTransitions(profileUserId) {
+  const user = await getUser();
+  if (!user) return { transitions: [], tracks: {} };
+
   const transitions = await pg("transitions")
     .join("users", { "users.spotifyid": "transitions.userid" })
     .leftJoin("likes", { "likes.transitionid": "transitions.id" })
-    .groupBy("id")
+    .groupBy(
+      "transitions.id",
+      "users.spotifyid",
+      "users.displayname",
+      "users.avatarurl"
+    )
     .select(
-      "id",
+      "transitions.id",
       "transitions.userid",
       "trackid1",
       "trackid2",
       "starttime",
-      "enhanced",
+      "track1json",
+      "track2json",
+      "youtubevideoid1",
+      "youtubevideoid2",
       pg.raw(
         `count(case when likes.userid = ? then 1 else null end) as liked`,
-        [JSON.parse(cookies().get("user").value).id]
-      )
+        [user.id]
+      ),
+      "users.displayname as profilename",
+      "users.avatarurl as profileavatar"
     )
-    .where({
-      spotifyid: user,
-    })
-    .count("transitionid", { as: "likes" });
+    .count("transitionid", { as: "likes" })
+    .where("transitions.userid", profileUserId);
 
-  const response = await fetch(`https://api.spotify.com/v1/users/${user}`);
-  const profile = await response.json();
+  if (transitions.length === 0) return { transitions: [], tracks: {} };
 
-  let transitionids = [];
-  for (let i in transitions) {
-    transitions[i].profile = profile;
-    const transition = transitions[i];
-    transitionids = [
-      ...transitionids,
-      transition.trackid1,
-      transition.trackid2,
-    ];
-  }
-
-  if (transitions.length === 0) return { transitions, tracks: [] };
-
-  const res = await fetch(
-    "https://api.spotify.com/v1/tracks?" +
-      new URLSearchParams({ ids: transitionids.toString() }),
-    {
-      headers: {
-        Authorization: `Bearer ${cookies().get("access_token").value}`,
-      },
-    }
-  );
-
-  const { tracks: result } = await res.json();
   const tracks = {};
-  for (let track of result) {
-    tracks[track.id] = track;
+  for (const t of transitions) {
+    const t1 = typeof t.track1json === "string" ? JSON.parse(t.track1json) : t.track1json;
+    const t2 = typeof t.track2json === "string" ? JSON.parse(t.track2json) : t.track2json;
+    if (t1) tracks[t.trackid1] = t1;
+    if (t2) tracks[t.trackid2] = t2;
+    t.profile = {
+      id: t.userid,
+      display_name: t.profilename,
+      avatarurl: t.profileavatar,
+    };
   }
+
   return { transitions, tracks };
 }

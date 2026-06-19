@@ -1,16 +1,26 @@
 "use server";
+import pg from "@/app/connection";
+import { getUser } from "@/app/home/_components/profile/action";
+import { resolveYoutubeId } from "./resolveYoutubeId";
 
-import pg from "../../../../connection";
-import { cookies } from "next/headers";
+export default async function upload(track1, track2, starttime) {
+  const user = await getUser();
+  if (!user) throw new Error("Not authenticated");
 
-export default async function upload(trackid1, trackid2, starttime, enhanced) {
-  const { id } = JSON.parse(cookies().get("user").value);
-  const result = await pg("transitions").insert({
-    userid: id,
-    trackid1,
-    trackid2,
+  const [youtubevideoid1, youtubevideoid2] = await Promise.all([
+    resolveYoutubeId(track1.name, track1.artists[0]?.name || ""),
+    resolveYoutubeId(track2.name, track2.artists[0]?.name || ""),
+  ]);
+
+  await pg("transitions").insert({
+    userid: user.id,
+    trackid1: track1.id,
+    trackid2: track2.id,
+    track1json: JSON.stringify(track1),
+    track2json: JSON.stringify(track2),
+    youtubevideoid1: youtubevideoid1 || "",
+    youtubevideoid2: youtubevideoid2 || "",
     starttime,
-    enhanced,
     date: new Date(),
   });
 }
