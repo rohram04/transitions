@@ -15,6 +15,7 @@
     "eslint-config-next": "13.4.10",
     "knex": "^2.5.1",
     "next": "^13.4.12",
+    "next-auth": "^4.24.14",
     "pg": "^8.11.1",
     "postcss": "8.4.26",
     "querystring": "^0.2.1",
@@ -24,6 +25,7 @@
     "react-palette": "^1.0.2",
     "request": "^2.88.2",
     "tailwindcss": "3.3.3",
+    "yt-search": "^2.13.1",
     "zustand": "^4.4.0"
   },
   "devDependencies": {
