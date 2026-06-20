@@ -181,22 +181,35 @@ export default function TransitionPlayer({
             }}
             className="flex flex-col gap-6 sm:flex-row grow items-center justify-center sm:px-8 pt-10 sm:pt-8"
           >
-            <Track
-              track={tracks[t.trackid1]}
-              progress={track1Progress}
-              isActive={playingTrackIndex === 0}
-              isPlaying={localPlaying && playingTrackIndex === 0}
-              reduceMotion={reduceMotion}
-              variants={cardVariants}
-            />
-            <Track
-              track={tracks[t.trackid2]}
-              progress={track2Progress}
-              isActive={playingTrackIndex === 1}
-              isPlaying={localPlaying && playingTrackIndex === 1}
-              reduceMotion={reduceMotion}
-              variants={cardVariants}
-            />
+            {sm ? (
+              <>
+                <Track
+                  track={tracks[t.trackid1]}
+                  progress={track1Progress}
+                  isActive={playingTrackIndex === 0}
+                  isPlaying={localPlaying && playingTrackIndex === 0}
+                  reduceMotion={reduceMotion}
+                  variants={cardVariants}
+                />
+                <Track
+                  track={tracks[t.trackid2]}
+                  progress={track2Progress}
+                  isActive={playingTrackIndex === 1}
+                  isPlaying={localPlaying && playingTrackIndex === 1}
+                  reduceMotion={reduceMotion}
+                  variants={cardVariants}
+                />
+              </>
+            ) : (
+              <MobileTracks
+                tracks={[tracks[t.trackid1], tracks[t.trackid2]]}
+                progresses={[track1Progress, track2Progress]}
+                activeIndex={playingTrackIndex ?? 0}
+                playingTrackIndex={playingTrackIndex}
+                localPlaying={localPlaying}
+                reduceMotion={reduceMotion}
+              />
+            )}
           </motion.div>
         </AnimatePresence>
 
@@ -395,5 +408,92 @@ function Track({ track, progress = 0, isActive, isPlaying, reduceMotion, variant
         />
       </div>
     </motion.div>
+  );
+}
+
+// Mobile single-column layout: one full hero + the other song collapsed to a
+// small muted name row. The already-played song sits ABOVE the hero, the
+// upcoming song sits BELOW. framer-motion `layout` smoothly animates the swap
+// when playback advances song 1 -> song 2.
+function MobileTracks({
+  tracks,
+  progresses,
+  activeIndex,
+  playingTrackIndex,
+  localPlaying,
+  reduceMotion,
+}) {
+  // Render both tracks in fixed index order (0 then 1). Ordering "played above,
+  // upcoming below" falls out naturally: the inactive track with a lower index
+  // is already-played and renders first; a higher index is upcoming and renders
+  // second. `layout` handles the positional shift during the swap.
+  return (
+    <motion.div
+      layout={!reduceMotion}
+      className="flex flex-col w-full grow items-center justify-center gap-4"
+    >
+      {tracks.map((track, index) => {
+        if (!track) return null;
+        const isActive = index === activeIndex;
+        const layoutId = track.id ?? `mobile-track-${index}`;
+        return (
+          <motion.div
+            key={layoutId}
+            layout={!reduceMotion}
+            transition={{
+              layout: { duration: reduceMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] },
+            }}
+            className="flex w-full justify-center"
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              {isActive ? (
+                <motion.div
+                  key="hero"
+                  layout={!reduceMotion}
+                  initial={reduceMotion ? false : { opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={reduceMotion ? undefined : { opacity: 0, scale: 0.9 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  className="w-full flex justify-center"
+                >
+                  <Track
+                    track={track}
+                    progress={progresses[index]}
+                    isActive={playingTrackIndex === index}
+                    isPlaying={localPlaying && playingTrackIndex === index}
+                    reduceMotion={reduceMotion}
+                    variants={undefined}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="collapsed"
+                  layout={!reduceMotion}
+                  initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className="w-full flex justify-center"
+                >
+                  <CollapsedTrack track={track} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        );
+      })}
+    </motion.div>
+  );
+}
+
+// Small muted name row for the non-active song on mobile.
+function CollapsedTrack({ track }) {
+  if (!track) return null;
+  return (
+    <div className="max-w-[20rem] w-full px-4 text-center">
+      <div className="text-sm font-medium text-white/50 truncate">
+        {track.name}
+      </div>
+    </div>
   );
 }
