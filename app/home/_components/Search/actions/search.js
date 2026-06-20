@@ -19,7 +19,7 @@ function normalizeTrack(result) {
   };
 }
 
-export default async function search(song) {
+export async function search(song) {
   if (!song || !song.trim()) return { tracks: { items: [] } };
   const url =
     "https://itunes.apple.com/search?" +
@@ -27,13 +27,19 @@ export default async function search(song) {
       term: song,
       media: "music",
       entity: "song",
-      limit: 10,
+      limit: "10",
     });
-  const response = await fetch(url);
-  const data = await response.json();
-  return {
-    tracks: {
-      items: (data.results || []).map(normalizeTrack),
-    },
-  };
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) return { tracks: { items: [] } };
+    const data = await response.json();
+    return {
+      tracks: {
+        items: (data.results || []).map(normalizeTrack),
+      },
+    };
+  } catch (err) {
+    console.error("iTunes search failed:", err);
+    return { tracks: { items: [] } };
+  }
 }

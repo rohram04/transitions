@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense, useTransition, use } from "react";
 import Track from "./track.jsx";
-import search from "./actions/search.js";
+import { search } from "./actions/search.js";
 import Image from "next/image";
 
 export default function Search({
