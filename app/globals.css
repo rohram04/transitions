@@ -78,7 +78,7 @@ body {
     #1a1a1a 100%
   );
   box-shadow:
-    0 25px 60px -15px rgba(0, 0, 0, 0.8),
+    0 10px 30px rgba(0, 0, 0, 0.5),
     inset 0 0 30px rgba(0, 0, 0, 0.6);
 }
 .vinyl-disc.spinning {
