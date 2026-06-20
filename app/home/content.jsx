@@ -5,7 +5,8 @@ import Logo from "../_components/spotifyLogo";
 import Profile from "./_components/profile/profile";
 import TransitionPlayer from "./_components/TransitionPlayer/TransitionPlayer";
 import useYouTubePlayer from "./youtubePlayer";
-import { CgSpinner } from "react-icons/cg";
+import { motion, AnimatePresence } from "framer-motion";
+import PlayerSkeleton from "../_components/Skeleton";
 
 export default function Content() {
   const ytPlayer = useYouTubePlayer();
@@ -23,17 +24,30 @@ export default function Content() {
         <Logo />
         <Profile setExplicitWarning={setExplicitWarning} />
       </div>
-      {ytPlayer.ytReady ? (
-        <div className="w-full h-full bg-slate-950">
-          <TransitionPlayer ytPlayer={ytPlayer} explicitWarning={explicitWarning}>
-            <Upload ytPlayer={ytPlayer} />
-          </TransitionPlayer>
-        </div>
-      ) : (
-        <div className="h-full w-screen flex place-content-center place-items-center bg-slate-950">
-          <CgSpinner size={50} className="animate-spin h-min" />
-        </div>
-      )}
+      <AnimatePresence mode="wait">
+        {ytPlayer.ytReady ? (
+          <motion.div
+            key="player"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="w-full h-full bg-slate-950"
+          >
+            <TransitionPlayer ytPlayer={ytPlayer} explicitWarning={explicitWarning}>
+              <Upload ytPlayer={ytPlayer} />
+            </TransitionPlayer>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="skeleton"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="w-full h-full"
+          >
+            <PlayerSkeleton />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

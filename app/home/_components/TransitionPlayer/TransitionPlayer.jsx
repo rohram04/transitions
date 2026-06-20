@@ -1,8 +1,8 @@
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import getTransitions from "./getTransitions.js";
-import Transition from "./Transition.jsx";
 import Player from "../../../_components/transitionPlayer";
-import { CgSpinner } from "react-icons/cg";
+import PlayerSkeleton from "../../../_components/Skeleton";
 
 export default function TransitionPlayer(props) {
   const [transitions, setTransitions] = useState([]);
@@ -25,44 +25,32 @@ export default function TransitionPlayer(props) {
     fetchData().finally(() => setLoading(false));
   }, []);
 
-  if (loading)
-    return (
-      <div className="h-full w-full flex place-content-center place-items-center">
-        <CgSpinner size={50} className="animate-spin h-min " />
-      </div>
-    );
+  if (loading) return <PlayerSkeleton />;
 
   if (transitions.length < 1)
     return (
-      <div className="h-full w-full flex flex-col gap-4 place-content-center place-items-center text-white">
+      <div className="relative h-full w-full flex flex-col gap-4 place-content-center place-items-center text-white bg-slate-950">
         <p className="text-slate-400">No transitions yet. Upload the first one!</p>
         {props.children}
       </div>
     );
 
   return (
-    <Player
-      setTransitions={setTransitions}
-      transitions={transitions}
-      tracks={tracks}
-      loadNewTransitions={fetchData}
-      {...props}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="w-full h-full"
     >
-      {props.children}
-    </Player>
-    // <div className="h-full w-full z-5 flex p-2 justify-center">
-    //   <div className="w-full h-full sm:w-1/2 md:w-1/3 grid gap-2 overflow-auto snap-y snap-mandatory scrollbar-hide">
-    //     {transitions.map((transition) => {
-    //       return (
-    //         <Transition
-    //           key={transition.id}
-    //           transition={transition}
-    //           track1={tracks[transition.trackid1]}
-    //           track2={tracks[transition.trackid2]}
-    //         />
-    //       );
-    //     })}
-    //   </div>
-    // </div>
+      <Player
+        setTransitions={setTransitions}
+        transitions={transitions}
+        tracks={tracks}
+        loadNewTransitions={fetchData}
+        {...props}
+      >
+        {props.children}
+      </Player>
+    </motion.div>
   );
 }

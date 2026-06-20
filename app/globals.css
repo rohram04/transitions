@@ -25,3 +25,111 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+/* ===== Look B "Bold" — animations & decorative elements ===== */
+
+/* Shimmer (skeleton loading) */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0.04) 30%,
+    rgba(255, 255, 255, 0.14) 50%,
+    rgba(255, 255, 255, 0.04) 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* Equalizer bars */
+@keyframes eq-bounce {
+  0%, 100% { transform: scaleY(0.2); }
+  50%      { transform: scaleY(1.0); }
+}
+.eq-bar {
+  height: 20px;
+  transform-origin: bottom;
+  animation: eq-bounce 0.8s ease-in-out infinite;
+}
+.paused .eq-bar {
+  animation-play-state: paused;
+  transform: scaleY(0.3);
+}
+
+/* Vinyl disc */
+@keyframes vinyl-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.vinyl-disc {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    #1a1a1a 0%, #111 30%,
+    #2a2a2a 31%, #111 35%,
+    #2a2a2a 36%, #111 40%,
+    #2a2a2a 41%, #111 45%,
+    #1a1a1a 100%
+  );
+  box-shadow:
+    0 25px 60px -15px rgba(0, 0, 0, 0.8),
+    inset 0 0 30px rgba(0, 0, 0, 0.6);
+}
+.vinyl-disc.spinning {
+  animation: vinyl-spin 4s linear infinite;
+}
+.vinyl-label {
+  position: absolute;
+  inset: 28%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #222;
+}
+.vinyl-hole {
+  position: absolute;
+  inset: 46%;
+  border-radius: 50%;
+  background: #0f172a;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.9);
+  z-index: 1;
+}
+
+/* Aurora / mesh background blobs */
+@keyframes aurora-drift-a {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  33%  { transform: translate3d(8%, -6%, 0) scale(1.2); }
+  66%  { transform: translate3d(-6%, 8%, 0) scale(0.9); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes aurora-drift-b {
+  0%   { transform: translate3d(0, 0, 0) scale(1.1); }
+  33%  { transform: translate3d(-9%, 7%, 0) scale(0.85); }
+  66%  { transform: translate3d(7%, -8%, 0) scale(1.25); }
+  100% { transform: translate3d(0, 0, 0) scale(1.1); }
+}
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  opacity: 0.85;
+  will-change: transform;
+}
+.aurora-blob-a { animation: aurora-drift-a 18s ease-in-out infinite; }
+.aurora-blob-b { animation: aurora-drift-b 22s ease-in-out infinite; }
+
+/* Reduced motion: kill all looping / decorative motion */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer,
+  .eq-bar,
+  .vinyl-disc.spinning,
+  .aurora-blob-a,
+  .aurora-blob-b {
+    animation: none !important;
+  }
+}
