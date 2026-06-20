@@ -11,7 +11,7 @@ export default function VinylDisc({ src, alt, isSpinning }) {
             src={src}
             fill
             alt={alt ?? ""}
-            sizes="(min-width: 640px) 18rem, 12rem"
+            sizes="(min-width: 1536px) 34rem, (min-width: 1280px) 30rem, (min-width: 1024px) 24rem, (min-width: 640px) 20rem, 12rem"
             className="object-cover rounded-full"
           />
         )}

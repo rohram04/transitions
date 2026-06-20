@@ -345,7 +345,7 @@ function Track({ track, progress = 0, isActive, isPlaying, reduceMotion, variant
       {/* Active track is a rotating vinyl hero; the other is flat album art */}
       <motion.div
         layout
-        className="relative flex items-center justify-center w-full max-w-[18rem] aspect-square"
+        className="relative flex items-center justify-center w-full max-w-[18rem] sm:max-w-[20rem] lg:max-w-[24rem] xl:max-w-[30rem] 2xl:max-w-[34rem] aspect-square"
         animate={
           reduceMotion
             ? undefined
@@ -361,7 +361,7 @@ function Track({ track, progress = 0, isActive, isPlaying, reduceMotion, variant
               className="object-cover"
               src={artUrl}
               fill={true}
-              sizes="(min-width: 640px) 14rem, 10rem"
+              sizes="(min-width: 1536px) 27rem, (min-width: 1280px) 24rem, (min-width: 1024px) 19rem, (min-width: 640px) 16rem, 10rem"
               alt={track?.album?.name || ""}
             />
           </span>
