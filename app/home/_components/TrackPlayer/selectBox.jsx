@@ -6,8 +6,8 @@ export default function SelectBox({ track, ...props }) {
       {track ? (
         <TrackDisplay track={track} {...props} />
       ) : (
-        <div className="grid h-full border-4 border-dashed border-slate-500 rounded-xl">
-          <div className="h-min place-self-center text-slate-500">
+        <div className="grid h-full border border-dashed border-white/15 bg-white/5 rounded-2xl">
+          <div className="h-min place-self-center text-white/40">
             Please Select a track
           </div>
         </div>

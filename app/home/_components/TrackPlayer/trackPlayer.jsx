@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import SelectBox from "./selectBox";
 import { resolveYoutubeId } from "./actions/resolveYoutubeId";
 import upload from "./actions/upload";
@@ -22,6 +23,7 @@ export default function TrackPlayer({
   const [localIsPlaying, setLocalIsPlaying] = useState(false);
   const previewIntervalRef = useRef(null);
   const frozenTrack1TimeRef = useRef(0);
+  const reduceMotion = useReducedMotion();
 
   const stopPreviewInterval = () => {
     clearInterval(previewIntervalRef.current);
@@ -114,8 +116,9 @@ export default function TrackPlayer({
           removeTrack={() => removeTrack(1)}
         />
       </div>
-      <div className="flex gap-4 w-full justify-evenly place-items-center">
-        <button
+      <div className="mx-auto mt-2 flex w-full max-w-md items-center justify-center gap-3 sm:gap-5 rounded-3xl border border-white/10 bg-white/5 px-4 py-3 shadow-2xl backdrop-blur-2xl">
+        <motion.button
+          whileTap={reduceMotion ? undefined : { scale: 0.85 }}
           onClick={async () => {
             if (localIsPlaying) {
               stopPreviewInterval();
@@ -131,11 +134,13 @@ export default function TrackPlayer({
               setPlayingKey(null);
             }
           }}
-          className="h-10 w-10 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
+          className="h-11 w-11 rounded-full p-1.5 text-white hover:bg-white/10 transition"
+          aria-label="Reset preview"
         >
           <CgRedo size="100%" />
-        </button>
-        <button
+        </motion.button>
+        <motion.button
+          whileTap={reduceMotion ? undefined : { scale: 0.85 }}
           onClick={async () => {
             if (previewing && localIsPlaying) {
               ytPlayer.pause();
@@ -151,11 +156,13 @@ export default function TrackPlayer({
             }
             await startPreview(selectedTracks[0]?.position || selectedTracks[0]?.time || 0);
           }}
-          className="h-12 w-12 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
+          className="h-14 w-14 rounded-full bg-white text-slate-950 shadow-lg hover:scale-105 transition flex items-center justify-center"
+          aria-label={localIsPlaying ? "Pause preview" : "Play preview"}
         >
-          {localIsPlaying ? <BiPause size="100%" /> : <BiPlay size="100%" />}
-        </button>
-        <button
+          {localIsPlaying ? <BiPause size="80%" /> : <BiPlay size="80%" className="translate-x-[2px]" />}
+        </motion.button>
+        <motion.button
+          whileTap={reduceMotion ? undefined : { scale: 0.85 }}
           onClick={async () => {
             if (Object.keys(selectedTracks).length !== 2) return;
             await upload(
@@ -167,10 +174,11 @@ export default function TrackPlayer({
             removeTrack(1);
             onClose();
           }}
-          className="h-10 w-10 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
+          className="h-11 w-11 rounded-full p-1.5 text-white hover:bg-white/10 transition"
+          aria-label="Upload transition"
         >
           <BiPlus size="100%" />
-        </button>
+        </motion.button>
       </div>
     </div>
   );

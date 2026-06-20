@@ -32,11 +32,11 @@ export default function Search({
       }
     >
       {children}
-      <div className="bg-slate-900 z-10 sticky top-0">
+      <div className="z-10 sticky top-0">
         <input
           onChange={handleChange}
           placeholder="Search"
-          className=" w-full p-2 rounded-lg bg-slate-800 outline-none hover:bg-slate-700 focus:bg-slate-700 text-white"
+          className="w-full p-2 rounded-xl border border-white/10 bg-white/5 backdrop-blur-2xl outline-none hover:bg-white/10 focus:bg-white/10 focus:border-white/20 text-white placeholder-white/40 transition"
           type="text"
         />
       </div>

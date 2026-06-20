@@ -91,7 +91,7 @@ export default function Modal({ open = false, onClose: close, ytPlayer, onModalP
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -105,8 +105,8 @@ export default function Modal({ open = false, onClose: close, ytPlayer, onModalP
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden md:rounded-lg bg-white text-left shadow-xl transition-all md:my-8 w-full md:max-w-4xl h-full">
-                <div className="bg-slate-900 p-2 px-4 pb-4 md:p-6 md:pb-4 h-full md:h-fit flex flex-col md:flex-row">
+              <Dialog.Panel className="relative transform overflow-hidden md:rounded-2xl bg-slate-900/80 backdrop-blur-2xl border border-white/10 text-left shadow-2xl transition-all md:my-8 w-full md:max-w-4xl h-full">
+                <div className="p-2 px-4 pb-4 md:p-6 md:pb-4 h-full md:h-fit flex flex-col md:flex-row">
                   <div
                     className={`h-full flex flex-col items-center w-full md:w-1/3 ${
                       Object.keys(selectedTracks).length === 2
