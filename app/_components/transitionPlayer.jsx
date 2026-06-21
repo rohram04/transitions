@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef, cloneElement } from "react";
 import { BiPlay, BiPause } from "react-icons/bi";
 import { BsSuitHeart, BsSuitHeartFill } from "react-icons/bs";
-import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
+import { MdNavigateNext, MdNavigateBefore, MdArrowDownward } from "react-icons/md";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { like, unlike } from "./like.js";
@@ -169,6 +169,10 @@ export default function TransitionPlayer({
       <AuroraBackground palette1={track1Color} palette2={track2Color} />
 
       <div className="relative z-10 flex flex-col w-full h-full p-2 sm:p-4">
+        {/* Stable grow area: the controls/dock stay put while only the
+            song/disk block crossfades on a transition change (the aurora
+            background animates its colours separately). */}
+        <div className="flex grow items-center justify-center w-full min-h-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={`${activeTransition}-${t.id}`}
@@ -179,26 +183,40 @@ export default function TransitionPlayer({
             variants={{
               animate: { transition: { staggerChildren: reduceMotion ? 0 : 0.12 } },
             }}
-            className="flex flex-col gap-6 sm:flex-row grow items-center justify-center sm:px-8 pt-10 sm:pt-8"
+            className="flex flex-col gap-6 sm:flex-row items-center justify-center w-full sm:px-8 pt-10 sm:pt-8"
           >
-            <Track
-              track={tracks[t.trackid1]}
-              progress={track1Progress}
-              isActive={playingTrackIndex === 0}
-              isPlaying={localPlaying && playingTrackIndex === 0}
-              reduceMotion={reduceMotion}
-              variants={cardVariants}
-            />
-            <Track
-              track={tracks[t.trackid2]}
-              progress={track2Progress}
-              isActive={playingTrackIndex === 1}
-              isPlaying={localPlaying && playingTrackIndex === 1}
-              reduceMotion={reduceMotion}
-              variants={cardVariants}
-            />
+            {sm ? (
+              <>
+                <Track
+                  track={tracks[t.trackid1]}
+                  progress={track1Progress}
+                  isActive={playingTrackIndex === 0}
+                  isPlaying={localPlaying && playingTrackIndex === 0}
+                  reduceMotion={reduceMotion}
+                  variants={cardVariants}
+                />
+                <Track
+                  track={tracks[t.trackid2]}
+                  progress={track2Progress}
+                  isActive={playingTrackIndex === 1}
+                  isPlaying={localPlaying && playingTrackIndex === 1}
+                  reduceMotion={reduceMotion}
+                  variants={cardVariants}
+                />
+              </>
+            ) : (
+              <MobileTracks
+                tracks={[tracks[t.trackid1], tracks[t.trackid2]]}
+                progresses={[track1Progress, track2Progress]}
+                activeIndex={playingTrackIndex ?? 0}
+                playingTrackIndex={playingTrackIndex}
+                localPlaying={localPlaying}
+                reduceMotion={reduceMotion}
+              />
+            )}
           </motion.div>
         </AnimatePresence>
+        </div>
 
         {/* Floating glass control dock */}
         <div className="mx-auto mb-2 sm:mb-4 flex w-full max-w-3xl items-center justify-center gap-3 sm:gap-5 rounded-3xl border border-white/10 bg-white/5 px-4 py-3 sm:px-6 sm:py-4 shadow-2xl backdrop-blur-2xl">
@@ -395,5 +413,121 @@ function Track({ track, progress = 0, isActive, isPlaying, reduceMotion, variant
         />
       </div>
     </motion.div>
+  );
+}
+
+// Mobile single-column layout: one full hero + the other song collapsed to a
+// small muted name row (already-played sits ABOVE the hero, upcoming BELOW).
+//
+// Smoothness: nothing animates its HEIGHT. The two collapsed rows live in
+// fixed-height slots above and below a height-stable hero, so when playback
+// advances song 1 -> song 2 the hero never collapses/re-expands — only the
+// contents crossfade (hero via popLayout so the outgoing copy is pulled out
+// of flow and can't push the layout around).
+function MobileTracks({
+  tracks,
+  progresses,
+  activeIndex,
+  playingTrackIndex,
+  localPlaying,
+  reduceMotion,
+}) {
+  const inactiveIndex = activeIndex === 0 ? 1 : 0;
+  const activeTrack = tracks[activeIndex];
+  const inactiveTrack = tracks[inactiveIndex];
+  // The already-played song (lower index than the active one) sits above.
+  const inactiveAbove = inactiveIndex < activeIndex;
+
+  if (!activeTrack) return null;
+
+  // A fixed-height slot that holds the collapsed song when it belongs on this
+  // side (above/below). Fixed height => no layout shift, just a crossfade.
+  const collapsedSlot = (above) => (
+    <div
+      className={`flex w-full justify-center min-h-[3.5rem] ${
+        above ? "items-end" : "items-start"
+      }`}
+    >
+      <AnimatePresence mode="wait" initial={false}>
+        {inactiveTrack && inactiveAbove === above && (
+          <motion.div
+            key={`collapsed-${inactiveTrack.id ?? inactiveIndex}`}
+            initial={reduceMotion ? false : { opacity: 0, y: above ? 6 : -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: above ? -6 : 6 }}
+            transition={{ duration: reduceMotion ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full flex justify-center"
+          >
+            <CollapsedTrack
+              track={inactiveTrack}
+              direction={above ? "from" : "to"}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col w-full grow items-center justify-center gap-3">
+      {collapsedSlot(true)}
+
+      <div className="relative flex w-full items-center justify-center">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.div
+            key={`hero-${activeTrack.id ?? activeIndex}`}
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={reduceMotion ? undefined : { opacity: 0, scale: 0.94 }}
+            transition={{ duration: reduceMotion ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full flex justify-center"
+          >
+            <Track
+              track={activeTrack}
+              progress={progresses[activeIndex]}
+              isActive={playingTrackIndex === activeIndex}
+              isPlaying={localPlaying && playingTrackIndex === activeIndex}
+              reduceMotion={reduceMotion}
+              variants={undefined}
+            />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {collapsedSlot(false)}
+    </div>
+  );
+}
+
+// Small muted name row for the non-active song on mobile. A flow arrow
+// points toward the now-playing hero so it reads as the OTHER half of the
+// transition (transitioned-from above / transitioning-to below), not as the
+// playing song's own metadata. `direction`: "from" = already-played (sits
+// above the hero), "to" = upcoming (sits below the hero).
+function CollapsedTrack({ track, direction = "to" }) {
+  if (!track) return null;
+
+  const arrow = (
+    <MdArrowDownward
+      className="text-white/35 shrink-0"
+      size={18}
+      aria-hidden="true"
+    />
+  );
+
+  const name = (
+    <div className="text-sm font-medium text-white/50 truncate max-w-[20rem]">
+      {track.name}
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col items-center gap-0.5 px-4 w-full">
+      {/* upcoming song: arrow above (hero -> this) */}
+      {direction === "to" && arrow}
+      {name}
+      {/* already-played song: arrow below (this -> hero) */}
+      {direction === "from" && arrow}
+    </div>
   );
 }
