@@ -26,7 +26,7 @@ function normalizeOAuthProfile(provider, profile) {
 export const authOptions = {
   // Credentials provider requires JWT sessions (no DB adapter).
   session: { strategy: "jwt" },
-  pages: { signIn: "/login" },
+  pages: { signIn: "/login", signOut: "/logout" },
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID,

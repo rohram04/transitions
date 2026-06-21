@@ -16,7 +16,7 @@ export const getUser = async () => {
 };
 
 export const logout = async () => {
-  redirect("/api/auth/signout");
+  redirect("/logout");
 };
 
 export async function deleteAccount() {
