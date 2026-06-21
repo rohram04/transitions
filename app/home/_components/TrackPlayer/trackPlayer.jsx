@@ -105,7 +105,7 @@ export default function TrackPlayer({
               time: ev.target.value,
             })
           }
-          active={playingKey === 0}
+          spinning={playingKey === 0 && localIsPlaying}
         />
         <SelectBox
           track={
@@ -114,6 +114,7 @@ export default function TrackPlayer({
               : undefined
           }
           removeTrack={() => removeTrack(1)}
+          spinning={playingKey === 1 && localIsPlaying}
         />
       </div>
       <div className="mx-auto mt-2 flex w-full max-w-md items-center justify-center gap-3 sm:gap-5 rounded-3xl border border-white/10 bg-white/5 px-4 py-3 shadow-2xl backdrop-blur-2xl">
