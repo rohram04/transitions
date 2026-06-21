@@ -417,9 +417,13 @@ function Track({ track, progress = 0, isActive, isPlaying, reduceMotion, variant
 }
 
 // Mobile single-column layout: one full hero + the other song collapsed to a
-// small muted name row. The already-played song sits ABOVE the hero, the
-// upcoming song sits BELOW. framer-motion `layout` smoothly animates the swap
-// when playback advances song 1 -> song 2.
+// small muted name row (already-played sits ABOVE the hero, upcoming BELOW).
+//
+// Smoothness: nothing animates its HEIGHT. The two collapsed rows live in
+// fixed-height slots above and below a height-stable hero, so when playback
+// advances song 1 -> song 2 the hero never collapses/re-expands — only the
+// contents crossfade (hero via popLayout so the outgoing copy is pulled out
+// of flow and can't push the layout around).
 function MobileTracks({
   tracks,
   progresses,
@@ -428,69 +432,70 @@ function MobileTracks({
   localPlaying,
   reduceMotion,
 }) {
-  // Render both tracks in fixed index order (0 then 1). Ordering "played above,
-  // upcoming below" falls out naturally: the inactive track with a lower index
-  // is already-played and renders first; a higher index is upcoming and renders
-  // second. `layout` handles the positional shift during the swap.
-  return (
-    <motion.div
-      layout={!reduceMotion}
-      className="flex flex-col w-full grow items-center justify-center gap-4"
+  const inactiveIndex = activeIndex === 0 ? 1 : 0;
+  const activeTrack = tracks[activeIndex];
+  const inactiveTrack = tracks[inactiveIndex];
+  // The already-played song (lower index than the active one) sits above.
+  const inactiveAbove = inactiveIndex < activeIndex;
+
+  if (!activeTrack) return null;
+
+  // A fixed-height slot that holds the collapsed song when it belongs on this
+  // side (above/below). Fixed height => no layout shift, just a crossfade.
+  const collapsedSlot = (above) => (
+    <div
+      className={`flex w-full justify-center min-h-[3.5rem] ${
+        above ? "items-end" : "items-start"
+      }`}
     >
-      {tracks.map((track, index) => {
-        if (!track) return null;
-        const isActive = index === activeIndex;
-        const layoutId = track.id ?? `mobile-track-${index}`;
-        return (
+      <AnimatePresence mode="wait" initial={false}>
+        {inactiveTrack && inactiveAbove === above && (
           <motion.div
-            key={layoutId}
-            layout={!reduceMotion}
-            transition={{
-              layout: { duration: reduceMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] },
-            }}
-            className="flex w-full justify-center"
+            key={`collapsed-${inactiveTrack.id ?? inactiveIndex}`}
+            initial={reduceMotion ? false : { opacity: 0, y: above ? 6 : -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: above ? -6 : 6 }}
+            transition={{ duration: reduceMotion ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full flex justify-center"
           >
-            <AnimatePresence mode="wait" initial={false}>
-              {isActive ? (
-                <motion.div
-                  key="hero"
-                  layout={!reduceMotion}
-                  initial={reduceMotion ? false : { opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={reduceMotion ? undefined : { opacity: 0, scale: 0.9 }}
-                  transition={{ duration: reduceMotion ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
-                  className="w-full flex justify-center"
-                >
-                  <Track
-                    track={track}
-                    progress={progresses[index]}
-                    isActive={playingTrackIndex === index}
-                    isPlaying={localPlaying && playingTrackIndex === index}
-                    reduceMotion={reduceMotion}
-                    variants={undefined}
-                  />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="collapsed"
-                  layout={!reduceMotion}
-                  initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
-                  transition={{ duration: reduceMotion ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
-                  className="w-full flex justify-center"
-                >
-                  <CollapsedTrack
-                    track={track}
-                    direction={index < activeIndex ? "from" : "to"}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <CollapsedTrack
+              track={inactiveTrack}
+              direction={above ? "from" : "to"}
+            />
           </motion.div>
-        );
-      })}
-    </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col w-full grow items-center justify-center gap-3">
+      {collapsedSlot(true)}
+
+      <div className="relative flex w-full items-center justify-center">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.div
+            key={`hero-${activeTrack.id ?? activeIndex}`}
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={reduceMotion ? undefined : { opacity: 0, scale: 0.94 }}
+            transition={{ duration: reduceMotion ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full flex justify-center"
+          >
+            <Track
+              track={activeTrack}
+              progress={progresses[activeIndex]}
+              isActive={playingTrackIndex === activeIndex}
+              isPlaying={localPlaying && playingTrackIndex === activeIndex}
+              reduceMotion={reduceMotion}
+              variants={undefined}
+            />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {collapsedSlot(false)}
+    </div>
   );
 }
 
