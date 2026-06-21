@@ -106,7 +106,7 @@ export default function Modal({ open = false, onClose: close, ytPlayer, onModalP
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel className="relative transform overflow-hidden md:rounded-2xl bg-slate-900/80 backdrop-blur-2xl border border-white/10 text-left shadow-2xl transition-all md:my-8 w-full md:max-w-4xl h-full">
-                <div className="p-2 px-4 pb-4 md:p-6 md:pb-4 h-full md:h-fit md:min-h-[30rem] flex flex-col md:flex-row">
+                <div className="p-2 px-4 pb-4 md:p-6 md:pb-4 h-full md:h-[33rem] flex flex-col md:flex-row">
                   <div
                     className={`h-full flex flex-col items-center w-full md:w-1/3 ${
                       Object.keys(selectedTracks).length === 2
