@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import SelectBox from "./selectBox";
 import { resolveYoutubeId } from "./actions/resolveYoutubeId";
@@ -6,6 +6,7 @@ import upload from "./actions/upload";
 import { BiPlay, BiPause, BiPlus } from "react-icons/bi";
 import { CgRedo } from "react-icons/cg";
 import Logo from "../logo";
+import ToastContext from "../toast";
 
 export default function TrackPlayer({
   ytPlayer,
@@ -24,6 +25,7 @@ export default function TrackPlayer({
   const previewIntervalRef = useRef(null);
   const frozenTrack1TimeRef = useRef(0);
   const reduceMotion = useReducedMotion();
+  const showToast = useContext(ToastContext);
 
   const stopPreviewInterval = () => {
     clearInterval(previewIntervalRef.current);
@@ -166,14 +168,29 @@ export default function TrackPlayer({
           whileTap={reduceMotion ? undefined : { scale: 0.85 }}
           onClick={async () => {
             if (Object.keys(selectedTracks).length !== 2) return;
-            await upload(
+            const res = await upload(
               selectedTracks[0].track,
               selectedTracks[1].track,
               selectedTracks[0].time
             );
-            removeTrack(0);
-            removeTrack(1);
-            onClose();
+            if (res?.ok) {
+              removeTrack(0);
+              removeTrack(1);
+              onClose();
+            } else if (res?.reason === "unauthenticated") {
+              showToast?.(
+                "error",
+                <span>
+                  Sign up or{" "}
+                  <a href="/login" className="underline font-medium">
+                    sign in
+                  </a>{" "}
+                  to upload transitions.
+                </span>
+              );
+            } else {
+              showToast?.("error", <span>Upload failed — please try again.</span>);
+            }
           }}
           className="h-11 w-11 rounded-full p-1.5 text-white hover:bg-white/10 transition"
           aria-label="Upload transition"

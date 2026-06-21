@@ -3,8 +3,8 @@ import pg from "@/app/connection";
 import { getUser } from "@/app/home/_components/profile/action";
 
 export default async function getTransitions(ids) {
+  // Guests (no user) may still browse; `liked` simply resolves to 0 for them.
   const user = await getUser();
-  if (!user) return { transitions: [], tracks: {} };
 
   const transitions = await pg("transitions")
     .orderBy(pg.raw("RANDOM()"))
@@ -29,7 +29,7 @@ export default async function getTransitions(ids) {
       "youtubevideoid2",
       pg.raw(
         `count(case when likes.userid = ? then 1 else null end) as liked`,
-        [user.id]
+        [user?.id ?? null]
       ),
       "users.displayname as profilename",
       "users.avatarurl as profileavatar"

@@ -11,7 +11,8 @@ import DeleteAccountModal from "./deleteAccountModal";
 import PrivacyPolicyModal from "../privacyPolicy/privacyPolicy";
 
 export default function Profile({ setExplicitWarning }) {
-  const [profile, setProfile] = useState({});
+  // undefined = still loading, null = guest (no session), object = signed-in user
+  const [profile, setProfile] = useState(undefined);
   const [showMenu, setShowMenu] = useState(false);
   const [deleteAccountModalOpen, setDeleteAccountModalOpen] = useState(false);
   const [privacyPolicyModalOpen, setPrivacyPolicyModalOpen] = useState(false);
@@ -33,8 +34,21 @@ export default function Profile({ setExplicitWarning }) {
     getProfile();
   }, []);
 
-  if (Object.keys(profile).length == 0)
+  // Still loading the session.
+  if (profile === undefined)
     return <div className="z-10 m-2 h-10"></div>;
+
+  // Guest (browsing without an account): show a sign-in / sign-up entry point.
+  if (profile === null || !profile.id)
+    return (
+      <Link
+        href="/login"
+        className="z-50 m-2 flex w-fit items-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-4 py-2 text-sm font-medium text-white shadow-lg backdrop-blur-xl transition hover:bg-white/20"
+      >
+        <FiUser size={18} />
+        Sign in / Sign up
+      </Link>
+    );
 
   return (
     <div

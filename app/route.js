@@ -5,5 +5,5 @@ import { redirect } from "next/navigation";
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (session) redirect("/home");
-  else redirect("/api/auth/signin/github");
+  else redirect("/login");
 }
