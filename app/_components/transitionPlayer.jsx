@@ -169,6 +169,10 @@ export default function TransitionPlayer({
       <AuroraBackground palette1={track1Color} palette2={track2Color} />
 
       <div className="relative z-10 flex flex-col w-full h-full p-2 sm:p-4">
+        {/* Stable grow area: the controls/dock stay put while only the
+            song/disk block crossfades on a transition change (the aurora
+            background animates its colours separately). */}
+        <div className="flex grow items-center justify-center w-full min-h-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={`${activeTransition}-${t.id}`}
@@ -179,7 +183,7 @@ export default function TransitionPlayer({
             variants={{
               animate: { transition: { staggerChildren: reduceMotion ? 0 : 0.12 } },
             }}
-            className="flex flex-col gap-6 sm:flex-row grow items-center justify-center sm:px-8 pt-10 sm:pt-8"
+            className="flex flex-col gap-6 sm:flex-row items-center justify-center w-full sm:px-8 pt-10 sm:pt-8"
           >
             {sm ? (
               <>
@@ -212,6 +216,7 @@ export default function TransitionPlayer({
             )}
           </motion.div>
         </AnimatePresence>
+        </div>
 
         {/* Floating glass control dock */}
         <div className="mx-auto mb-2 sm:mb-4 flex w-full max-w-3xl items-center justify-center gap-3 sm:gap-5 rounded-3xl border border-white/10 bg-white/5 px-4 py-3 sm:px-6 sm:py-4 shadow-2xl backdrop-blur-2xl">
