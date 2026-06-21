@@ -165,7 +165,7 @@ export default function TransitionPlayer({
       };
 
   return (
-    <div className="relative flex flex-col w-full h-full overflow-hidden bg-slate-950">
+    <div className="relative flex flex-col w-full h-full bg-slate-950">
       <AuroraBackground palette1={track1Color} palette2={track2Color} />
 
       <div className="relative z-10 flex flex-col w-full h-full p-2 sm:p-4">
@@ -340,7 +340,7 @@ function Track({ track, progress = 0, isActive, isPlaying, reduceMotion, variant
       layout
       variants={variants}
       transition={{ layout: { duration: reduceMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] } }}
-      className="flex flex-col basis-1/2 items-center w-full sm:px-4 gap-4 whitespace-nowrap truncate"
+      className="flex flex-col basis-1/2 items-center w-full sm:px-4 gap-4 whitespace-nowrap"
     >
       {/* Active track is a rotating vinyl hero; the other is flat album art */}
       <motion.div
