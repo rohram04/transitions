@@ -20,6 +20,10 @@ const nextConfig = {
         port: "",
         pathname: "/platform/profilepic/**",
       },
+      // GitHub OAuth avatars
+      { protocol: "https", hostname: "avatars.githubusercontent.com" },
+      // Google OAuth avatars (lh1–lh6 subdomains)
+      { protocol: "https", hostname: "*.googleusercontent.com" },
     ],
   },
   experimental: {
