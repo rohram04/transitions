@@ -10,6 +10,8 @@ const nextConfig = {
       { protocol: "https", hostname: "is5-ssl.mzstatic.com" },
       // GitHub avatars
       { protocol: "https", hostname: "avatars.githubusercontent.com" },
+      // Google OAuth avatars (lh1–lh6 subdomains)
+      { protocol: "https", hostname: "*.googleusercontent.com" },
       // Keep iconizer for any misc images
       { protocol: "http", hostname: "iconizer.net", pathname: "/files/**" },
     ],

@@ -86,7 +86,9 @@ export const authOptions = {
     async session({ session, token }) {
       session.user.id = token.id;
       session.user.login = token.login;
-      session.user.image = token.avatarUrl;
+      // token.picture is NextAuth's default OAuth avatar field; fall back to it
+      // so existing sessions without token.avatarUrl still show the profile picture.
+      session.user.image = token.avatarUrl ?? token.picture ?? null;
       return session;
     },
   },
