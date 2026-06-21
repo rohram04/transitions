@@ -14,12 +14,6 @@ export default function Content() {
 
   return (
     <>
-      {/* Hidden YouTube IFrame player — audio only */}
-      <div
-        id="yt-player"
-        className="fixed bottom-0 left-0 pointer-events-none"
-        style={{ width: 1, height: 1, opacity: 0 }}
-      />
       <div className="flex flex-row absolute z-10 top-0 w-full items-center justify-between">
         <Logo />
         <Profile setExplicitWarning={setExplicitWarning} />

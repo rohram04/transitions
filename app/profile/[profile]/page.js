@@ -14,6 +14,10 @@ import { getUser } from "@/app/home/_components/profile/action";
 import { CgSpinner } from "react-icons/cg";
 import Logo from "../../_components/spotifyLogo";
 
+// No-op placeholder for TransitionPlayer's required cloneElement child (the
+// profile view has no upload modal; the back button lives at the page level).
+const Noop = () => null;
+
 export default function Page({ params }) {
   const [transitions, setTransitions] = useState([]);
   const [tracks, setTracks] = useState({});
@@ -55,19 +59,19 @@ export default function Page({ params }) {
     return res;
   };
 
+  const handleBack = () => {
+    ytPlayer.pause();
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/home");
+    }
+  };
+
   const ready = profile !== undefined && !loading;
 
   return (
     <>
-      {/* Hidden YouTube IFrame player — kept mounted at all times so the
-          player initialises while the grid loads; playback no-ops if the
-          iframe isn't ready yet, so we gate the player view on ytReady below. */}
-      <div
-        id="yt-player"
-        className="fixed bottom-0 left-0 pointer-events-none"
-        style={{ width: 1, height: 1, opacity: 0 }}
-      />
-
       {!ready ? (
         <div className="hd-screen w-screen flex place-content-center place-items-center bg-slate-950">
           <CgSpinner size={50} className="animate-spin h-min text-white" />
@@ -77,24 +81,31 @@ export default function Page({ params }) {
           {typeof startIndex === "number" ? (
             <>
               {ytPlayer.ytReady ? (
-                <TransitionPlayer
-                  startIndex={startIndex}
-                  transitions={transitions}
-                  tracks={tracks}
-                  ytPlayer={ytPlayer}
-                  setTransitions={setTransitions}
-                  explicitWarning={false}
-                >
+                <>
+                  {/* Back button at the page top-left, consistent with the grid
+                      view. Rendered here (not as TransitionPlayer children) so it
+                      isn't trapped inside the control dock's backdrop-blur
+                      containing block. */}
                   <button
                     onClick={() => {
                       ytPlayer.pause();
                       setStartIndex(false);
                     }}
-                    className="absolute h-12 w-12 top-0 left-0 mx-2 my-4 hover:opacity-50 transition ease-in-out duration-300 rounded-lg p-2 text-white"
+                    className="fixed z-20 h-12 w-12 top-0 left-0 mx-2 my-4 hover:opacity-50 transition ease-in-out duration-300 rounded-lg p-2 text-white"
                   >
                     <IoMdArrowBack size="100%" />
                   </button>
-                </TransitionPlayer>
+                  <TransitionPlayer
+                    startIndex={startIndex}
+                    transitions={transitions}
+                    tracks={tracks}
+                    ytPlayer={ytPlayer}
+                    setTransitions={setTransitions}
+                    explicitWarning={false}
+                  >
+                    <Noop />
+                  </TransitionPlayer>
+                </>
               ) : (
                 <div className="grow flex items-center justify-center">
                   <CgSpinner size={50} className="animate-spin text-white" />
@@ -104,10 +115,7 @@ export default function Page({ params }) {
           ) : (
             <>
               <button
-                onClick={() => {
-                  ytPlayer.pause();
-                  router.push("/home");
-                }}
+                onClick={handleBack}
                 className="absolute h-12 w-12 top-0 left-0 mx-2 my-4 rounded-lg p-2 hover:opacity-50 transition ease-in-out duration-300 text-white"
               >
                 <IoMdArrowBack size="100%" />
