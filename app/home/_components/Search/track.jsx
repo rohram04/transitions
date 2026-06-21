@@ -8,7 +8,7 @@ export default function Track({ track }) {
   }
 
   return (
-    <div className="transition ease-in-out hover:bg-slate-600 duration-300 hover:cursor-pointer rounded-lg bg-slate-800 flex w-full h-full place-items-center">
+    <div className="transition ease-in-out hover:bg-white/10 duration-300 hover:cursor-pointer rounded-xl border border-white/10 bg-white/5 flex w-full h-full place-items-center">
       <span className="flex-none w-14 h-14 relative">
         <Image
           className="object-contain rounded-lg max-w-fit p-2"
@@ -19,7 +19,7 @@ export default function Track({ track }) {
       </span>
       <span class="flex flex-col flex-initial py-2 min-w-0">
         <div className="truncate text-sm text-white">{track.name}</div>
-        <div className="truncate text-xs text-white">{artists}</div>
+        <div className="truncate text-xs text-white/50">{artists}</div>
       </span>
     </div>
   );

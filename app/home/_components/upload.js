@@ -10,7 +10,11 @@ export default function Upload(props) {
   return (
     <Fragment>
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setOpen(true);
+          props.ytPlayer?.pause();
+          props.onModalPreviewStart?.();
+        }}
         className="h-14 w-14 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
       >
         <BiPlus size="100%" />

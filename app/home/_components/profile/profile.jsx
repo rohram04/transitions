@@ -1,6 +1,7 @@
 import { useState, useEffect, useTransition, Fragment } from "react";
 import { getUser, logout } from "./action";
 import { Transition } from "@headlessui/react";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { BsCaretDownFill } from "react-icons/bs";
@@ -9,8 +10,9 @@ import Link from "next/link";
 import DeleteAccountModal from "./deleteAccountModal";
 import PrivacyPolicyModal from "../privacyPolicy/privacyPolicy";
 
-export default function Profile({ player, setExplicitWarning }) {
-  const [profile, setProfile] = useState({});
+export default function Profile({ setExplicitWarning }) {
+  // undefined = still loading, null = guest (no session), object = signed-in user
+  const [profile, setProfile] = useState(undefined);
   const [showMenu, setShowMenu] = useState(false);
   const [deleteAccountModalOpen, setDeleteAccountModalOpen] = useState(false);
   const [privacyPolicyModalOpen, setPrivacyPolicyModalOpen] = useState(false);
@@ -18,8 +20,7 @@ export default function Profile({ player, setExplicitWarning }) {
 
   const router = useRouter();
 
-  const handleLogout = async () => {
-    await player?.disconnect();
+  const handleLogout = () => {
     startTransition(() => logout());
   };
 
@@ -27,33 +28,47 @@ export default function Profile({ player, setExplicitWarning }) {
     const getProfile = async () => {
       const profile = await getUser();
       setProfile(profile);
-      setExplicitWarning(profile.country === "KR");
+      setExplicitWarning(false);
     };
 
     getProfile();
   }, []);
 
-  if (Object.keys(profile).length == 0)
+  // Still loading the session.
+  if (profile === undefined)
     return <div className="z-10 m-2 h-10"></div>;
+
+  // Guest (browsing without an account): show a sign-in / sign-up entry point.
+  if (profile === null || !profile.id)
+    return (
+      <Link
+        href="/login"
+        className="z-50 m-2 flex w-fit items-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-4 py-2 text-sm font-medium text-white shadow-lg backdrop-blur-xl transition hover:bg-white/20"
+      >
+        <FiUser size={18} />
+        Sign in / Sign up
+      </Link>
+    );
 
   return (
     <div
-      className="z-10 m-2 w-fit"
+      className="relative z-50 m-2 w-fit"
       onBlur={(event) => {
         if (privacyPolicyModalOpen || deleteAccountModalOpen) return;
         if (event.currentTarget.contains(event.relatedTarget)) return;
         setShowMenu(false);
       }}
     >
-      <button
+      <motion.button
+        whileTap={{ scale: 0.96 }}
         onClick={() => setShowMenu((state) => !state)}
-        className="flex gap-2 p-2 rounded-lg bg-slate-600 hover:opacity-70 transition ease-in-out duration-300"
+        className="flex gap-2 p-2 rounded-2xl border border-white/10 bg-white/10 backdrop-blur-xl shadow-lg text-white hover:bg-white/20 transition ease-in-out duration-300"
       >
         <span className="flex-none h-fit relative">
-          {profile?.images?.length > 0 ? (
+          {profile?.avatarurl ? (
             <Image
               className="object-contain rounded-full"
-              src={profile?.images[1]?.url}
+              src={profile?.avatarurl}
               height={40}
               width={40}
               alt={profile.display_name}
@@ -68,7 +83,7 @@ export default function Profile({ player, setExplicitWarning }) {
         <div className="place-self-center text-white h-6 w-6">
           <BsCaretDownFill size="100%" />
         </div>
-      </button>
+      </motion.button>
       <Transition
         show={showMenu}
         enter="transition ease-out duration-100"
@@ -79,30 +94,29 @@ export default function Profile({ player, setExplicitWarning }) {
         leaveTo="transform opacity-0 scale-95"
       >
         <div
-          className="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-slate-600 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+          className="absolute right-0 z-50 mt-2 w-full origin-top-right rounded-2xl border border-white/10 bg-slate-900/80 backdrop-blur-2xl shadow-2xl focus:outline-none overflow-hidden"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="menu-button"
-          tabindex="-1"
+          tabIndex="-1"
         >
-          <div class="py-1" role="none">
+          <div className="py-1" role="none">
             <button
-              onClick={async () => {
-                await player?.disconnect();
+              onClick={() => {
                 router.push(`/profile/${profile.id}`);
               }}
-              class="text-white block px-4 py-2 text-sm text-left transition ease-in-out duration-300 hover:text-white/50"
+              className="text-white block w-full px-4 py-2 text-sm text-left transition ease-in-out duration-300 hover:bg-white/10"
               role="menuitem"
-              tabindex="-1"
+              tabIndex="-1"
               id="menu-item-0"
             >
               View Profile
             </button>
             <button
               onClick={handleLogout}
-              className="text-white block w-full px-4 py-2 text-left text-sm transition ease-in-out duration-300 hover:text-white/50"
+              className="text-white block w-full px-4 py-2 text-left text-sm transition ease-in-out duration-300 hover:bg-white/10"
               role="menuitem"
-              tabindex="-1"
+              tabIndex="-1"
               id="menu-item-2"
             >
               Sign out
@@ -120,9 +134,9 @@ export default function Profile({ player, setExplicitWarning }) {
             </Link> */}
             <button
               onClick={() => setDeleteAccountModalOpen(true)}
-              className="text-white block w-full px-4 py-2 text-left text-sm transition ease-in-out duration-300 hover:text-white/50"
+              className="text-white block w-full px-4 py-2 text-left text-sm transition ease-in-out duration-300 hover:bg-white/10"
               role="menuitem"
-              tabindex="-1"
+              tabIndex="-1"
               id="menu-item-2"
             >
               Delete Account
@@ -134,9 +148,9 @@ export default function Profile({ player, setExplicitWarning }) {
             />
             <button
               onClick={() => setPrivacyPolicyModalOpen(true)}
-              className="text-white block w-full px-4 py-2 text-left text-sm transition ease-in-out duration-300 hover:text-white/50"
+              className="text-white block w-full px-4 py-2 text-left text-sm transition ease-in-out duration-300 hover:bg-white/10"
               role="menuitem"
-              tabindex="-1"
+              tabIndex="-1"
               id="menu-item-2"
             >
               Privacy Policy

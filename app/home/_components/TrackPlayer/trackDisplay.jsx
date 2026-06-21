@@ -1,6 +1,5 @@
-import Image from "next/image";
 import ProgressBar from "./progressBar";
-import Link from "next/link";
+import VinylDisc from "@/app/_components/VinylDisc";
 
 export default function TrackDisplay({
   track,
@@ -8,42 +7,41 @@ export default function TrackDisplay({
   togglePlay,
   paused,
   onChange,
+  spinning = false,
 }) {
+  const artUrl = track?.track?.album?.images?.[0]?.url || "";
+
   return (
-    <div className="h-full rounded-xl flex flex-col">
-      <div className="flex flex-col grow">
-        <span class="flex-none relative grow">
-          <Image
-            className="object-contain p-2"
-            src={track?.track?.album?.images[0].url}
-            fill={true}
+    <div className="h-full w-full min-w-0 flex flex-col items-center p-2">
+      <div className="flex flex-col grow items-center justify-center w-full min-w-0 gap-3">
+        {/* Floating vinyl disc — fills the slot width (capped) so it flexes
+            into the available space; equal slots (w-1/2 + min-w-0) keep both
+            discs identical and square, so it can't distort. Spins while previewing. */}
+        <div className="relative w-full max-w-[14rem] aspect-square mx-auto">
+          <VinylDisc
+            src={artUrl}
             alt={track?.track?.album?.name}
+            isSpinning={spinning}
           />
-        </span>
+        </div>
         <div
           tabIndex={0}
-          className="text-center text-white whitespace-nowrap truncate group focus:overflow-y-scroll focus:whitespace-normal scrollbar-hide"
+          className="w-full min-w-0 text-center text-white group focus:whitespace-normal scrollbar-hide"
         >
-          <div className="text-sm whitespace-nowrap truncate group-focus:whitespace-normal group-focus:overflow-none">
+          <div className="text-sm font-semibold truncate group-focus:whitespace-normal">
             {track.track.name}
           </div>
-          <div className="text-sm whitespace-nowrap truncate group-focus:whitespace-normal group-focus:overflow-none">
-            {track.track.album.name}
+          <div className="text-sm text-white/80 truncate group-focus:whitespace-normal">
+            {track.track.album.artists.map((artist, index) =>
+              index === 0 ? artist.name : ", " + artist.name
+            )}
           </div>
-          <div className="text-sm whitespace-nowrap truncate group-focus:whitespace-normal group-focus:overflow-none">
-            {track.track.album.artists.map((artist, index) => {
-              return index == 0 ? artist.name : ", " + artist.name;
-            })}
+          <div className="text-sm text-white/50 truncate group-focus:whitespace-normal">
+            {track.track.album.name}
           </div>
         </div>
       </div>
-      {/* <button
-        onClick={togglePlay}
-        className="place-self-center hover:bg-slate-700 bg-slate-800 rounded-full w-fit py-2 px-3 m-1 mx-2"
-      >
-        {active && !paused ? <>&#x23F8;</> : <>&#9658;</>}
-      </button> */}
-      <div className="p-2">
+      <div className="p-2 w-full min-w-0">
         <ProgressBar
           progress={track?.position}
           duration={track.track?.duration_ms}

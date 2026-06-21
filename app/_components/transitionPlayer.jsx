@@ -1,295 +1,536 @@
+"use client";
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, cloneElement } from "react";
 import { BiPlay, BiPause } from "react-icons/bi";
 import { BsSuitHeart, BsSuitHeartFill } from "react-icons/bs";
-import { GrFormNext, GrFormPrevious } from "react-icons/gr";
-import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
-import preview from "app/home/_components/TrackPlayer/actions/preview.js";
+import { MdNavigateNext, MdNavigateBefore, MdArrowDownward } from "react-icons/md";
 import { useRouter, usePathname } from "next/navigation";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { like, unlike } from "./like.js";
 import { usePalette } from "react-palette";
 import { useMediaQuery } from "./mediaMatchHook";
 import { FiUser } from "react-icons/fi";
-import Link from "next/link";
-import Footer from "./spotifyFooter";
+import AuroraBackground from "./AuroraBackground";
+import VinylDisc from "./VinylDisc";
+import EqualizerBars from "./EqualizerBars";
 
 export default function TransitionPlayer({
   transitions,
   tracks,
-  player,
-  device_id,
-  playerState,
+  ytPlayer,
   startIndex = 0,
   children,
   setTransitions,
   explicitWarning,
   loadNewTransitions = () => {},
 }) {
-  // const [player, playerState, device_id] = useStore((state) => [state.player, state.playerState, state.device_id])
   const [activeTransition, setActiveTransition] = useState(startIndex);
-  const intervalRef = useRef();
-  const [positions, setPositions] = useState({});
-  const positionsRef = useRef();
+  const [playingTrackIndex, setPlayingTrackIndex] = useState(null);
+  const [localPlaying, setLocalPlaying] = useState(false);
+  const [trackTime, setTrackTime] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
-  const {
-    data: track1Color,
-    loading,
-    error,
-  } = usePalette(
-    tracks[transitions[activeTransition].trackid1].album?.images[0].url
-  );
-  const { data: track2Color } = usePalette(
-    tracks[transitions[activeTransition].trackid2].album?.images[0].url
-  );
-  const sm = useMediaQuery("(min-width: 640px)");
+  const reduceMotion = useReducedMotion();
 
+  const activeTransitionRef = useRef(activeTransition);
+  const playingTrackIndexRef = useRef(playingTrackIndex);
+  const transitionsRef = useRef(transitions);
+  const ytPlayerRef = useRef(ytPlayer);
+  const trackTimeIntervalRef = useRef(null);
+
+  useEffect(() => { activeTransitionRef.current = activeTransition; }, [activeTransition]);
+  useEffect(() => { playingTrackIndexRef.current = playingTrackIndex; }, [playingTrackIndex]);
+  useEffect(() => { transitionsRef.current = transitions; }, [transitions]);
+  useEffect(() => { ytPlayerRef.current = ytPlayer; }, [ytPlayer]);
+
+  const stopTimeTracking = () => {
+    clearInterval(trackTimeIntervalRef.current);
+    trackTimeIntervalRef.current = null;
+  };
+
+  const startTimeTracking = (startMs = 0) => {
+    stopTimeTracking();
+    setTrackTime(startMs);
+    trackTimeIntervalRef.current = setInterval(() => {
+      const player = ytPlayerRef.current;
+      if (player?.getOwner() === "main") {
+        setTrackTime(player.getTime());
+      }
+    }, 500);
+  };
+
+  // Re-register onEnded each time we take ownership of the player.
+  const registerOnEnded = () => {
+    ytPlayerRef.current?.setOnEnded(() => {
+      const player = ytPlayerRef.current;
+      const tr = transitionsRef.current[activeTransitionRef.current];
+      if (playingTrackIndexRef.current === 0 && tr?.youtubevideoid2) {
+        player.play(tr.youtubevideoid2, 0);
+        playingTrackIndexRef.current = 1;
+        setPlayingTrackIndex(1);
+        setTrackTime(0);
+      } else {
+        stopTimeTracking();
+        setLocalPlaying(false);
+        setPlayingTrackIndex(null);
+        if (activeTransitionRef.current < transitionsRef.current.length - 1) {
+          setActiveTransition((prev) => prev + 1);
+        }
+      }
+    });
+  };
+
+  // Auto-play track 1 whenever active transition changes.
   useEffect(() => {
-    clearInterval(intervalRef.current);
-    setPositions({});
+    if (!ytPlayer?.play) return;
+    const tr = transitions[activeTransition];
+    if (tr?.youtubevideoid1) {
+      ytPlayer.setOwner("main");
+      registerOnEnded();
+      ytPlayer.play(tr.youtubevideoid1, (tr.starttime || 0) / 1000);
+      playingTrackIndexRef.current = 0;
+      setPlayingTrackIndex(0);
+      setLocalPlaying(true);
+      startTimeTracking(tr.starttime || 0);
+    }
   }, [activeTransition]);
 
   useEffect(() => {
-    positionsRef.current = positions;
-  }, [positions]);
+    return () => stopTimeTracking();
+  }, []);
 
-  useEffect(() => {
-    preview(
-      device_id,
-      [
-        tracks[transitions[activeTransition].trackid1],
-        tracks[transitions[activeTransition].trackid2],
-      ],
-      transitions[activeTransition].starttime
-    );
-  }, [activeTransition, device_id]);
+  const t = transitions[activeTransition];
+  const { data: track1Color } = usePalette(tracks[t.trackid1]?.album?.images[0]?.url || "");
+  const { data: track2Color } = usePalette(tracks[t.trackid2]?.album?.images[0]?.url || "");
+  const sm = useMediaQuery("(min-width: 640px)");
 
-  useEffect(() => {
-    if (!player) return;
-    const positionControl = (state) => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      const current_track = state.track_window.current_track;
-      setPositions((prev) => {
-        return {
-          ...prev,
-          [current_track.id]: state.position,
-        };
+  const track1Progress =
+    playingTrackIndex === 0 ? trackTime : tracks[t.trackid1]?.duration_ms ?? 0;
+  const track2Progress =
+    playingTrackIndex === 1 ? trackTime : 0;
+
+  const liked = Number(t.liked) === 1;
+
+  const handleLike = () => {
+    if (liked) {
+      setTransitions((prev) => {
+        let copy = [...prev];
+        copy[activeTransition].liked = 0;
+        copy[activeTransition].likes = String(Number(copy[activeTransition].likes) - 1);
+        return copy;
       });
-      if (state.paused) return;
-      intervalRef.current = setInterval(() => {
-        if (positionsRef.current[current_track.id] >= current_track.duration_ms)
-          return clearInterval(intervalRef.current);
-        setPositions((prev) => {
-          return { ...prev, [current_track.id]: prev[current_track.id] + 1000 };
-        });
-      }, 1000);
-    };
-
-    player.addListener("player_state_changed", positionControl);
-  }, [player]);
-
-  useEffect(() => {
-    if (activeTransition === transitions.length - 1) return;
-    if (
-      playerState?.track_window?.previous_tracks.length > 0 &&
-      playerState?.track_window?.previous_tracks[0].id ==
-        transitions[activeTransition].trackid2
-    ) {
-      setActiveTransition((prev) => prev + 1);
+      return unlike(t.id);
     }
-  }, [playerState]);
+    setTransitions((prev) => {
+      let copy = [...prev];
+      copy[activeTransition].liked = 1;
+      copy[activeTransition].likes = String(Number(copy[activeTransition].likes) + 1);
+      return copy;
+    });
+    return like(t.id);
+  };
+
+  const handlePlayPause = () => {
+    if (!ytPlayer) return;
+    if (localPlaying) {
+      ytPlayer.pause();
+      stopTimeTracking();
+      setLocalPlaying(false);
+    } else {
+      const tr = transitions[activeTransition];
+      if (tr?.youtubevideoid1) {
+        ytPlayer.setOwner("main");
+        registerOnEnded();
+        ytPlayer.play(tr.youtubevideoid1, (tr.starttime || 0) / 1000);
+        playingTrackIndexRef.current = 0;
+        setPlayingTrackIndex(0);
+        setLocalPlaying(true);
+        startTimeTracking(tr.starttime || 0);
+      }
+    }
+  };
+
+  // Stagger / entrance variants (disabled when reduced motion).
+  const cardVariants = reduceMotion
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+      }
+    : {
+        initial: { opacity: 0, y: 40, scale: 0.92 },
+        animate: { opacity: 1, y: 0, scale: 1 },
+        exit: { opacity: 0, y: -30, scale: 0.95 },
+      };
 
   return (
-    <div
-      className="flex flex-col w-full h-full p-2"
-      style={{
-        backgroundImage: sm
-          ? `linear-gradient(to right, ${track1Color.darkMuted}, ${track2Color.darkMuted})`
-          : `linear-gradient(${track1Color.darkMuted}, ${track2Color.darkMuted})`,
-      }}
-    >
-      <div className="flex flex-col gap-4 sm:flex-row grow sm:px-8 pt-8">
-        <Track
-          track={tracks[transitions[activeTransition].trackid1]}
-          progress={positions[transitions[activeTransition].trackid1]}
-        />
-        <Track
-          track={tracks[transitions[activeTransition].trackid2]}
-          progress={positions[transitions[activeTransition].trackid2]}
-        />
-      </div>
+    <div className="relative flex flex-col w-full h-full bg-slate-950">
+      <AuroraBackground palette1={track1Color} palette2={track2Color} />
 
-      <div className="flex items-center mx-2 sm:mx-4 sm:mt-4 sm:gap-4 justify-center">
-        {explicitWarning &&
-          (tracks[transitions[activeTransition].trackid1].explicit ||
-            tracks[transitions[activeTransition].trackid2].explicit) && (
-            <span className="flex-none relative w-8 h-8 sm:w-10 sm:h-10 rounded-full">
-              <Image
-                className="object-contain rounded-full"
-                src={"/spotify-icons-logos/19badge-dark.png"}
-                fill={true}
-                alt={"explicit warning"}
-              />
-            </span>
-          )}
-        <div className="flex flex-col sm:flex-row sm:gap-2 items-center mr-2 sm:mr-0">
-          <div className="sm:text-lg order-last sm:order-first text-white">
-            {transitions[activeTransition].likes}
-          </div>
-          <button
-            onClick={() => {
-              if (transitions[activeTransition].liked === "1") {
-                setTransitions((prev) => {
-                  let copy = [...prev];
-                  copy[activeTransition].liked = "0";
-                  copy[activeTransition].likes = String(
-                    Number(copy[activeTransition].likes) - 1
-                  );
-                  return copy;
-                });
-                return unlike(transitions[activeTransition].id);
-              }
-              setTransitions((prev) => {
-                let copy = [...prev];
-                copy[activeTransition].liked = "1";
-                copy[activeTransition].likes = String(
-                  Number(copy[activeTransition].likes) + 1
-                );
-                return copy;
-              });
-              return like(transitions[activeTransition].id);
+      <div className="relative z-10 flex flex-col w-full h-full p-2 sm:p-4">
+        {/* Stable grow area: the controls/dock stay put while only the
+            song/disk block crossfades on a transition change (the aurora
+            background animates its colours separately). */}
+        <div className="flex grow items-center justify-center w-full min-h-0">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`${activeTransition}-${t.id}`}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: reduceMotion ? 0.15 : 0.45, ease: [0.22, 1, 0.36, 1] }}
+            variants={{
+              animate: { transition: { staggerChildren: reduceMotion ? 0 : 0.12 } },
             }}
-            className="h-8 w-8 sm:h-10 sm:w-10 text-white"
+            className="flex flex-col gap-6 sm:flex-row items-center justify-center w-full sm:px-8 pt-10 sm:pt-8"
           >
-            {transitions[activeTransition].liked === "0" ? (
-              <BsSuitHeart size="100%" />
+            {sm ? (
+              <>
+                <Track
+                  track={tracks[t.trackid1]}
+                  progress={track1Progress}
+                  isActive={playingTrackIndex === 0}
+                  isPlaying={localPlaying && playingTrackIndex === 0}
+                  reduceMotion={reduceMotion}
+                  variants={cardVariants}
+                />
+                <Track
+                  track={tracks[t.trackid2]}
+                  progress={track2Progress}
+                  isActive={playingTrackIndex === 1}
+                  isPlaying={localPlaying && playingTrackIndex === 1}
+                  reduceMotion={reduceMotion}
+                  variants={cardVariants}
+                />
+              </>
             ) : (
-              <BsSuitHeartFill size="100%" className="text-red-500" />
-            )}
-          </button>
-        </div>
-        <button
-          disabled={
-            pathname === `/profile/${transitions[activeTransition].profile.id}`
-          }
-          onClick={async () => {
-            await player.disconnect();
-            router.push(`/profile/${transitions[activeTransition].profile.id}`);
-          }}
-          className="flex items-center"
-        >
-          <span className="flex-none relative w-10 h-10 sm:w-16 sm:h-16 rounded-full">
-            {transitions[activeTransition].profile?.images.length > 0 ? (
-              <Image
-                className="object-contain rounded-full"
-                src={transitions[activeTransition].profile?.images[1]?.url}
-                fill={true}
-                alt={transitions[activeTransition].profile?.display_name}
+              <MobileTracks
+                tracks={[tracks[t.trackid1], tracks[t.trackid2]]}
+                progresses={[track1Progress, track2Progress]}
+                activeIndex={playingTrackIndex ?? 0}
+                playingTrackIndex={playingTrackIndex}
+                localPlaying={localPlaying}
+                reduceMotion={reduceMotion}
               />
-            ) : (
-              <div className="w-full h-full flex items-center place-content-center">
-                <FiUser className="w-full h-full  p-2 sm:p-4 bg-slate-800 rounded-full" />
-              </div>
             )}
-          </span>
-          <div className="sm:text-xl ml-2 text-white">
-            {transitions[activeTransition].profile?.display_name}
+          </motion.div>
+        </AnimatePresence>
+        </div>
+
+        {/* Floating glass control dock */}
+        <div className="mx-auto mb-2 sm:mb-4 flex w-full max-w-3xl items-center justify-center gap-3 sm:gap-5 rounded-3xl border border-white/10 bg-white/5 px-4 py-3 sm:px-6 sm:py-4 shadow-2xl backdrop-blur-2xl">
+          {explicitWarning &&
+            (tracks[t.trackid1]?.explicit || tracks[t.trackid2]?.explicit) && (
+              <span className="flex-none relative w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-yellow-400 flex items-center justify-center">
+                <span className="text-black font-bold text-xs">E</span>
+              </span>
+            )}
+
+          <div className="flex flex-col items-center">
+            <motion.button
+              whileTap={reduceMotion ? undefined : { scale: 0.8 }}
+              onClick={handleLike}
+              aria-label={liked ? "Unlike" : "Like"}
+              className="relative h-7 w-7 sm:h-9 sm:w-9 text-white"
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                {liked ? (
+                  <motion.span
+                    key="filled"
+                    initial={reduceMotion ? false : { scale: 0.4, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={reduceMotion ? undefined : { scale: 0.4, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 18 }}
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <BsSuitHeartFill size="100%" className="text-red-500" />
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="outline"
+                    initial={reduceMotion ? false : { scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={reduceMotion ? undefined : { scale: 0.8, opacity: 0 }}
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <BsSuitHeart size="100%" />
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
+            <span className="text-xs sm:text-sm font-semibold text-white/80 tabular-nums">
+              {t.likes}
+            </span>
           </div>
-        </button>
-        <button
-          onClick={() => {
-            setActiveTransition((prev) => prev - 1);
-          }}
-          className="h-14 w-20 sm:w-16 sm:h-14 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30 text-white"
-          disabled={activeTransition === 0}
-        >
-          <MdNavigateBefore size="100%" />
-        </button>
-        <button
-          onClick={() => {
-            if (playerState?.track_window.current_track)
-              return player.togglePlay();
-            preview(
-              device_id,
-              [
-                tracks[transitions[activeTransition].trackid1],
-                tracks[transitions[activeTransition].trackid2],
-              ],
-              transitions[activeTransition].starttime
-            );
-          }}
-          className="h-14 w-20 sm:w-16 sm:h-14 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white "
-          hidden={player.disabled}
-          disabled={player.disabled}
-        >
-          {playerState == null || playerState.paused ? (
-            <BiPlay size="100%" />
-          ) : (
-            <BiPause size="100%" />
-          )}
-        </button>
-        <button
-          onClick={async () => {
-            if (activeTransition === transitions.length - 2) {
-              loadNewTransitions();
-            }
-            setActiveTransition((prev) => prev + 1);
-          }}
-          className="h-14 w-20 sm:w-16 sm:h-14 rounded-lg hover:opacity-50 transition ease-in-out duration-300 disabled:opacity-30 text-white"
-          disabled={activeTransition === transitions.length - 1}
-        >
-          <MdNavigateNext size="100%" />
-        </button>
-        {children}
+
+          <motion.button
+            whileTap={reduceMotion ? undefined : { scale: 0.92 }}
+            disabled={pathname === `/profile/${t.profile?.id}`}
+            onClick={() => router.push(`/profile/${t.profile?.id}`)}
+            className="flex items-center gap-2 disabled:opacity-60"
+          >
+            <span className="flex-none relative w-9 h-9 sm:w-12 sm:h-12 rounded-full ring-2 ring-white/20">
+              {t.profile?.avatarurl ? (
+                <Image
+                  className="object-cover rounded-full"
+                  src={t.profile.avatarurl}
+                  fill={true}
+                  alt={t.profile.display_name || ""}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center place-content-center">
+                  <FiUser className="w-full h-full p-2 bg-slate-800 rounded-full" />
+                </div>
+              )}
+            </span>
+            <span className="hidden sm:block text-sm md:text-base text-white/90 font-medium max-w-[8rem] truncate">
+              {t.profile?.display_name}
+            </span>
+          </motion.button>
+
+          <motion.button
+            whileTap={reduceMotion ? undefined : { scale: 0.85 }}
+            onClick={() => setActiveTransition((prev) => prev - 1)}
+            className="h-11 w-11 sm:h-12 sm:w-12 rounded-full text-white hover:bg-white/10 transition disabled:opacity-30"
+            disabled={activeTransition === 0}
+            aria-label="Previous transition"
+          >
+            <MdNavigateBefore size="100%" />
+          </motion.button>
+
+          <motion.button
+            whileTap={reduceMotion ? undefined : { scale: 0.85 }}
+            onClick={handlePlayPause}
+            className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-white text-slate-950 shadow-lg hover:scale-105 transition flex items-center justify-center"
+            aria-label={localPlaying ? "Pause" : "Play"}
+          >
+            {localPlaying ? (
+              <BiPause size="80%" />
+            ) : (
+              <BiPlay size="80%" className="translate-x-[2px]" />
+            )}
+          </motion.button>
+
+          <motion.button
+            whileTap={reduceMotion ? undefined : { scale: 0.85 }}
+            onClick={async () => {
+              if (activeTransition === transitions.length - 2) {
+                loadNewTransitions();
+              }
+              setActiveTransition((prev) => prev + 1);
+            }}
+            className="h-11 w-11 sm:h-12 sm:w-12 rounded-full text-white hover:bg-white/10 transition disabled:opacity-30"
+            disabled={activeTransition === transitions.length - 1}
+            aria-label="Next transition"
+          >
+            <MdNavigateNext size="100%" />
+          </motion.button>
+
+          {/* Pass ownership callbacks into the upload modal */}
+          {cloneElement(children, {
+            onModalPreviewStart: () => {
+              stopTimeTracking();
+              setLocalPlaying(false);
+            },
+            onModalPreviewEnd: () => {
+              ytPlayer?.setOwner(null);
+              ytPlayer?.setOnEnded(null);
+            },
+          })}
+        </div>
       </div>
-      <Footer
-        href={
-          playerState
-            ? playerState.track_window.current_track.uri
-            : tracks[transitions[activeTransition].trackid1].uri
-        }
-      />
     </div>
   );
 }
 
-function Track({ track, progress = 0 }) {
-  let percentage = (progress / track.duration_ms) * 100;
+function Track({ track, progress = 0, isActive, isPlaying, reduceMotion, variants }) {
+  if (!track) return null;
+  let percentage = (progress / (track.duration_ms || 1)) * 100;
+  if (percentage > 100) percentage = 100;
   if (percentage < 1) percentage = 0;
 
+  const artUrl = track?.album?.images[0]?.url || "";
+
   return (
-    <div className="flex flex-col basis-1/2 w-full sm:px-4 gap-2 whitespace-nowrap truncate">
-      <span class="flex-none relative grow">
-        <Image
-          className="object-contain"
-          src={track?.album?.images[0].url}
-          fill={true}
-          alt={track?.album?.name}
-        />
-      </span>
+    <motion.div
+      layout
+      variants={variants}
+      transition={{ layout: { duration: reduceMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] } }}
+      className="flex flex-col basis-1/2 items-center w-full sm:px-4 gap-4 whitespace-nowrap"
+    >
+      {/* Active track is a rotating vinyl hero; the other is flat album art */}
+      {/* Size by the SMALLER of a rem cap, a viewport-width cap and a viewport-height
+          cap. aspect-square makes height follow width, so the vh term guarantees the
+          disc never overflows the viewport vertically: tall screens fall back to the
+          rem cap (large disc); short/wide screens shrink to fit so the player always
+          fills one screen with no scroll. */}
+      <motion.div
+        layout
+        className="relative flex items-center justify-center aspect-square w-[min(18rem,72vw,26vh)] sm:w-[min(20rem,42vw,48vh)] lg:w-[min(24rem,42vw,50vh)] xl:w-[min(30rem,40vw,52vh)] 2xl:w-[min(34rem,40vw,54vh)]"
+        animate={
+          reduceMotion
+            ? undefined
+            : { scale: isActive ? 1 : 0.82, opacity: isActive ? 1 : 0.78 }
+        }
+        transition={{ type: "spring", stiffness: 220, damping: 26 }}
+      >
+        {isActive ? (
+          <VinylDisc src={artUrl} alt={track?.album?.name} isSpinning={isPlaying && !reduceMotion} />
+        ) : (
+          <span className="relative w-[78%] aspect-square rounded-2xl overflow-hidden shadow-2xl">
+            <Image
+              className="object-cover"
+              src={artUrl}
+              fill={true}
+              sizes="(min-width: 1536px) 27rem, (min-width: 1280px) 24rem, (min-width: 1024px) 19rem, (min-width: 640px) 16rem, 10rem"
+              alt={track?.album?.name || ""}
+            />
+          </span>
+        )}
+      </motion.div>
+
       <div
-        className="text-center py-1 sm:py-4 text-white group focus:overflow-y-scroll scrollbar-hide "
+        className="text-center max-w-[20rem] text-white group focus:overflow-y-scroll scrollbar-hide"
         tabIndex={0}
       >
-        <div className="text-xl sm:text-base md:text-xl lg:text-3xl sm:mb-1 whitespace-nowrap truncate group-focus:overflow-none group-focus:whitespace-normal">
-          {track.name}
+        <div className="flex items-center justify-center gap-2">
+          {isPlaying && <EqualizerBars isPlaying={isPlaying} />}
+          <div className="text-2xl sm:text-xl md:text-2xl lg:text-4xl font-bold tracking-tight whitespace-nowrap truncate group-focus:whitespace-normal">
+            {track.name}
+          </div>
         </div>
-        <div className="lg:text-xl sm:mb-1 whitespace-nowrap truncate group-focus:overflow-none group-focus:whitespace-normal">
-          {track.album.artists.map((artist, index) => {
-            return index == 0 ? artist.name : ", " + artist.name;
-          })}
+        <div className="lg:text-xl text-white/80 mt-1 whitespace-nowrap truncate group-focus:whitespace-normal">
+          {track.album?.artists?.map((artist, index) =>
+            index === 0 ? artist.name : ", " + artist.name
+          )}
         </div>
-        <div className="lg:text-xl sm:mb-1 whitespace-nowrap truncate group-focus:overflow-none group-focus:whitespace-normal">
-          {track.album.name}
+        <div className="lg:text-lg text-white/50 whitespace-nowrap truncate group-focus:whitespace-normal">
+          {track.album?.name}
         </div>
       </div>
 
-      <div className="sm:w-full w-4/5 h-2.5 sm:h-4 rounded-full bg-slate-600 mb-2 self-center">
+      <div className="w-4/5 sm:w-full max-w-[20rem] h-2 rounded-full bg-white/15 overflow-hidden self-center">
         <div
-          className="h-full rounded-full bg-white"
+          className="h-full rounded-full bg-white transition-[width] duration-500 ease-linear"
           style={{ width: percentage + "%" }}
-        ></div>
+        />
       </div>
+    </motion.div>
+  );
+}
+
+// Mobile single-column layout: one full hero + the other song collapsed to a
+// small muted name row (already-played sits ABOVE the hero, upcoming BELOW).
+//
+// Smoothness: nothing animates its HEIGHT. The two collapsed rows live in
+// fixed-height slots above and below a height-stable hero, so when playback
+// advances song 1 -> song 2 the hero never collapses/re-expands — only the
+// contents crossfade (hero via popLayout so the outgoing copy is pulled out
+// of flow and can't push the layout around).
+function MobileTracks({
+  tracks,
+  progresses,
+  activeIndex,
+  playingTrackIndex,
+  localPlaying,
+  reduceMotion,
+}) {
+  const inactiveIndex = activeIndex === 0 ? 1 : 0;
+  const activeTrack = tracks[activeIndex];
+  const inactiveTrack = tracks[inactiveIndex];
+  // The already-played song (lower index than the active one) sits above.
+  const inactiveAbove = inactiveIndex < activeIndex;
+
+  if (!activeTrack) return null;
+
+  // A fixed-height slot that holds the collapsed song when it belongs on this
+  // side (above/below). Fixed height => no layout shift, just a crossfade.
+  const collapsedSlot = (above) => (
+    <div
+      className={`flex w-full justify-center min-h-[3.5rem] ${
+        above ? "items-end" : "items-start"
+      }`}
+    >
+      <AnimatePresence mode="wait" initial={false}>
+        {inactiveTrack && inactiveAbove === above && (
+          <motion.div
+            key={`collapsed-${inactiveTrack.id ?? inactiveIndex}`}
+            initial={reduceMotion ? false : { opacity: 0, y: above ? 6 : -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: above ? -6 : 6 }}
+            transition={{ duration: reduceMotion ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full flex justify-center"
+          >
+            <CollapsedTrack
+              track={inactiveTrack}
+              direction={above ? "from" : "to"}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col w-full grow items-center justify-center gap-3">
+      {collapsedSlot(true)}
+
+      <div className="relative flex w-full items-center justify-center">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.div
+            key={`hero-${activeTrack.id ?? activeIndex}`}
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={reduceMotion ? undefined : { opacity: 0, scale: 0.94 }}
+            transition={{ duration: reduceMotion ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full flex justify-center"
+          >
+            <Track
+              track={activeTrack}
+              progress={progresses[activeIndex]}
+              isActive={playingTrackIndex === activeIndex}
+              isPlaying={localPlaying && playingTrackIndex === activeIndex}
+              reduceMotion={reduceMotion}
+              variants={undefined}
+            />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {collapsedSlot(false)}
+    </div>
+  );
+}
+
+// Small muted name row for the non-active song on mobile. A flow arrow
+// points toward the now-playing hero so it reads as the OTHER half of the
+// transition (transitioned-from above / transitioning-to below), not as the
+// playing song's own metadata. `direction`: "from" = already-played (sits
+// above the hero), "to" = upcoming (sits below the hero).
+function CollapsedTrack({ track, direction = "to" }) {
+  if (!track) return null;
+
+  const arrow = (
+    <MdArrowDownward
+      className="text-white/35 shrink-0"
+      size={18}
+      aria-hidden="true"
+    />
+  );
+
+  const name = (
+    <div className="text-sm font-medium text-white/50 truncate max-w-[20rem]">
+      {track.name}
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col items-center gap-0.5 px-4 w-full">
+      {/* upcoming song: arrow above (hero -> this) */}
+      {direction === "to" && arrow}
+      {name}
+      {/* already-played song: arrow below (this -> hero) */}
+      {direction === "from" && arrow}
     </div>
   );
 }

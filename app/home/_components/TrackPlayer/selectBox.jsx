@@ -2,13 +2,13 @@ import TrackDisplay from "./trackDisplay.jsx";
 
 export default function SelectBox({ track, ...props }) {
   return (
-    <div className="p-1 m-1 w-1/2 overflow-hidden grow w-full">
+    <div className="p-1 m-1 w-full sm:w-1/2 min-w-0 flex">
       {track ? (
         <TrackDisplay track={track} {...props} />
       ) : (
-        <div className="grid h-full border-4 border-dashed border-slate-500 rounded-xl">
-          <div className="h-min place-self-center text-slate-500">
-            Please Select a track
+        <div className="mx-auto mt-2 mb-auto grid place-items-center w-full max-w-[14rem] aspect-square rounded-full border-2 border-dashed border-white/15 bg-white/5">
+          <div className="text-white/40 text-sm text-center px-6">
+            Select a track
           </div>
         </div>
       )}

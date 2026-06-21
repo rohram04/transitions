@@ -31,7 +31,7 @@ export default function ProgressBar({
         className="w-full h-2.5 rounded-full cursor-pointer bg-slate-600 progress"
         disabled={disabled}
       /> */}
-      <div className={"text-sm" + (value ? "" : " invisible")}>
+      <div className={"text-sm text-white/80 tabular-nums" + (value ? "" : " invisible")}>
         {convertedValue}
       </div>
       <div className="mt-2">
@@ -45,7 +45,7 @@ export default function ProgressBar({
             value={value}
           />
         )}
-        <div className="w-full h-1.5 rounded-full bg-slate-600 mb-2">
+        <div className="w-full h-1.5 rounded-full bg-white/15 mb-2 overflow-hidden">
           <div
             className="h-full rounded-full bg-white"
             style={{ width: percentage + "%" }}
@@ -54,12 +54,12 @@ export default function ProgressBar({
       </div>
       <div className="flex">
         <button
-          className="hover:text-slate-400 w-min place-self-start text-sm"
+          className="text-white/50 hover:text-white transition w-min place-self-start text-sm"
           onClick={removeTrack}
         >
           Remove
         </button>
-        <div className="text-sm grow text-right">{convertedProgress}</div>
+        <div className="text-sm grow text-right text-white/80 tabular-nums">{convertedProgress}</div>
       </div>
     </div>
   );

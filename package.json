@@ -2,6 +2,9 @@
   "name": "spotify_bites_1",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,10 +14,14 @@
   "dependencies": {
     "@headlessui/react": "^1.7.15",
     "autoprefixer": "10.4.14",
+    "bcryptjs": "^3.0.3",
+    "cheerio": "^1.2.0",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.10",
+    "framer-motion": "^12.40.0",
     "knex": "^2.5.1",
     "next": "^13.4.12",
+    "next-auth": "^4.24.14",
     "pg": "^8.11.1",
     "postcss": "8.4.26",
     "querystring": "^0.2.1",
@@ -24,10 +31,11 @@
     "react-palette": "^1.0.2",
     "request": "^2.88.2",
     "tailwindcss": "3.3.3",
+    "yt-search": "^2.13.1",
     "zustand": "^4.4.0"
   },
   "devDependencies": {
-    "@types/node": "20.4.5",
+    "@types/node": "^24.0.0",
     "@types/react": "18.2.18"
   }
 }

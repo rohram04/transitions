@@ -1,21 +1,45 @@
 "use server";
 
-import { cookies } from "next/headers";
-import fetch from "../../../../fetch";
+function normalizeTrack(result) {
+  const artworkUrl = result.artworkUrl100
+    ? result.artworkUrl100.replace("100x100bb", "600x600bb")
+    : "";
+  return {
+    id: String(result.trackId),
+    name: result.trackName,
+    duration_ms: result.trackTimeMillis || 0,
+    explicit: result.trackExplicitness !== "notExplicit",
+    uri: "",
+    album: {
+      name: result.collectionName || "",
+      images: [{ url: artworkUrl }],
+      artists: [{ name: result.artistName || "" }],
+    },
+    artists: [{ name: result.artistName || "" }],
+  };
+}
 
-export default async function search(song) {
-  const response = await fetch(
-    "https://api.spotify.com/v1/search?" +
-      new URLSearchParams({
-        q: song,
-        type: "track",
-      }),
-    {
-      headers: {
-        Authorization: `Bearer ${cookies().get("access_token").value}`,
+export async function search(song) {
+  if (!song || !song.trim()) return { tracks: { items: [] } };
+  const url =
+    "https://itunes.apple.com/search?" +
+    new URLSearchParams({
+      term: song,
+      media: "music",
+      entity: "song",
+      limit: "10",
+    });
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) return { tracks: { items: [] } };
+    const data = await response.json();
+    return {
+      tracks: {
+        items: (data.results || []).map(normalizeTrack),
       },
-    }
-  );
-  const result = await response.json();
-  return result;
+    };
+  } catch (err) {
+    console.error("iTunes search failed:", err);
+    return { tracks: { items: [] } };
+  }
 }
