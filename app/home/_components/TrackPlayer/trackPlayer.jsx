@@ -90,7 +90,7 @@ export default function TrackPlayer({
       <div className="fixed w-full left-0 top-0 pt-2 px-4 z-20">
         <Logo onClose={onClose} />
       </div>
-      <div className="flex flex-col sm:flex-row grow min-h-0">
+      <div className="flex flex-col sm:flex-row grow min-h-0 justify-center sm:justify-normal">
         <SelectBox
           track={
             selectedTracks[0]
