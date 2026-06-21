@@ -3,6 +3,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FaGithub } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 import { CgSpinner } from "react-icons/cg";
 import { signup } from "./actions";
 
@@ -56,12 +57,20 @@ export default function LoginPage() {
           {mode === "signin" ? "Sign in to continue" : "Create an account"}
         </p>
 
-        <button
-          onClick={() => signIn("github", { callbackUrl: "/home" })}
-          className="w-full flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/10 hover:bg-white/20 transition text-white py-2.5 font-medium"
-        >
-          <FaGithub /> Continue with GitHub
-        </button>
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={() => signIn("github", { callbackUrl: "/home" })}
+            className="w-full flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/10 hover:bg-white/20 transition text-white py-2.5 font-medium"
+          >
+            <FaGithub /> Continue with GitHub
+          </button>
+          <button
+            onClick={() => signIn("google", { callbackUrl: "/home" })}
+            className="w-full flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/10 hover:bg-white/20 transition text-white py-2.5 font-medium"
+          >
+            <FcGoogle size={18} /> Continue with Google
+          </button>
+        </div>
 
         <div className="flex items-center gap-3 my-5">
           <div className="h-px flex-1 bg-white/10" />
@@ -108,13 +117,17 @@ export default function LoginPage() {
             : "Already have an account? Sign in"}
         </button>
 
-        <div className="mt-6 pt-4 border-t border-white/10 text-center">
+        <div className="mt-6 pt-5 border-t border-white/10">
           <button
             onClick={() => router.push("/home")}
-            className="text-white/40 hover:text-white/70 text-sm transition"
+            className="w-full flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 py-2.5 font-medium text-white/90 hover:bg-white/10 hover:text-white transition"
           >
-            Browse without an account →
+            Browse without an account
+            <span aria-hidden>→</span>
           </button>
+          <p className="mt-2 text-center text-xs text-white/40">
+            You can sign up later to upload your own transitions.
+          </p>
         </div>
       </div>
     </div>
