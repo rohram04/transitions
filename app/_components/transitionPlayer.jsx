@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef, cloneElement } from "react";
 import { BiPlay, BiPause } from "react-icons/bi";
 import { BsSuitHeart, BsSuitHeartFill } from "react-icons/bs";
-import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
+import { MdNavigateNext, MdNavigateBefore, MdArrowDownward } from "react-icons/md";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { like, unlike } from "./like.js";
@@ -480,7 +480,10 @@ function MobileTracks({
                   transition={{ duration: reduceMotion ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
                   className="w-full flex justify-center"
                 >
-                  <CollapsedTrack track={track} />
+                  <CollapsedTrack
+                    track={track}
+                    direction={index < activeIndex ? "from" : "to"}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -491,14 +494,35 @@ function MobileTracks({
   );
 }
 
-// Small muted name row for the non-active song on mobile.
-function CollapsedTrack({ track }) {
+// Small muted name row for the non-active song on mobile. A flow arrow
+// points toward the now-playing hero so it reads as the OTHER half of the
+// transition (transitioned-from above / transitioning-to below), not as the
+// playing song's own metadata. `direction`: "from" = already-played (sits
+// above the hero), "to" = upcoming (sits below the hero).
+function CollapsedTrack({ track, direction = "to" }) {
   if (!track) return null;
+
+  const arrow = (
+    <MdArrowDownward
+      className="text-white/35 shrink-0"
+      size={18}
+      aria-hidden="true"
+    />
+  );
+
+  const name = (
+    <div className="text-sm font-medium text-white/50 truncate max-w-[20rem]">
+      {track.name}
+    </div>
+  );
+
   return (
-    <div className="max-w-[20rem] w-full px-4 text-center">
-      <div className="text-sm font-medium text-white/50 truncate">
-        {track.name}
-      </div>
+    <div className="flex flex-col items-center gap-0.5 px-4 w-full">
+      {/* upcoming song: arrow above (hero -> this) */}
+      {direction === "to" && arrow}
+      {name}
+      {/* already-played song: arrow below (this -> hero) */}
+      {direction === "from" && arrow}
     </div>
   );
 }
