@@ -4,9 +4,11 @@
 -- compatibility with existing rows; it now holds the GitHub user id.
 
 CREATE TABLE IF NOT EXISTS users (
-  spotifyid   TEXT PRIMARY KEY,
-  displayname TEXT,
-  avatarurl   TEXT
+  spotifyid    TEXT PRIMARY KEY,
+  displayname  TEXT,
+  avatarurl    TEXT,
+  username     TEXT UNIQUE,   -- credentials (username/password) users only; NULL for GitHub
+  passwordhash TEXT           -- bcrypt hash for credentials users; NULL for GitHub
 );
 
 CREATE TABLE IF NOT EXISTS transitions (
@@ -45,6 +47,8 @@ CREATE TABLE IF NOT EXISTS youtube_cache (
 -- ── Migration for databases created before Phase 1 ──────────────────
 -- These are no-ops on a fresh DB (columns already created above).
 ALTER TABLE users       ADD COLUMN IF NOT EXISTS avatarurl       TEXT;
+ALTER TABLE users       ADD COLUMN IF NOT EXISTS username        TEXT UNIQUE;
+ALTER TABLE users       ADD COLUMN IF NOT EXISTS passwordhash    TEXT;
 ALTER TABLE transitions ADD COLUMN IF NOT EXISTS track1json      JSONB;
 ALTER TABLE transitions ADD COLUMN IF NOT EXISTS track2json      JSONB;
 ALTER TABLE transitions ADD COLUMN IF NOT EXISTS youtubevideoid1 TEXT;

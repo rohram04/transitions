@@ -7,13 +7,14 @@ import TransitionPlayer from "./_components/TransitionPlayer/TransitionPlayer";
 import useYouTubePlayer from "./youtubePlayer";
 import { motion, AnimatePresence } from "framer-motion";
 import PlayerSkeleton from "../_components/Skeleton";
+import { ToastContextProvider } from "./_components/toast";
 
 export default function Content() {
   const ytPlayer = useYouTubePlayer();
   const [explicitWarning, setExplicitWarning] = useState(false);
 
   return (
-    <>
+    <ToastContextProvider>
       <div className="flex flex-row absolute z-50 top-0 w-full items-center justify-between">
         <Logo />
         <Profile setExplicitWarning={setExplicitWarning} />
@@ -42,6 +43,6 @@ export default function Content() {
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </ToastContextProvider>
   );
 }

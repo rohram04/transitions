@@ -1,5 +1,4 @@
-import { useReducer, createContext, useEffect } from "react";
-import { Transition } from "@headlessui/react";
+import { useReducer, createContext } from "react";
 
 const ToastContext = createContext();
 
@@ -52,39 +51,24 @@ export function ToastContextProvider({ children }) {
     }, 3000);
   };
 
-  useEffect(() => {
-    console.log(toasts.keys());
-  }, [toasts]);
-
   return (
     <ToastContext.Provider value={showToast}>
       {children}
-      <div className="fixed bottom-0 left-0 m-4">
+      <div className="fixed bottom-0 left-0 m-4 z-50 flex flex-col gap-2">
         {[...toasts.keys()].map((key) => {
           const toast = toasts.get(key);
-          console.log(toast);
-          switch (toast.type) {
-            case "error":
-              return (
-                <div className="bg-slate-600 p-3 w-72 m-2 rounded-lg">
-                  {toast.child}
-                </div>
-              );
-            case "success":
-              return (
-                <Transition
-                  appear={true}
-                  show={true}
-                  entering="transform transition-opacity ease-in duration-500"
-                  enterFrom="opacity-0"
-                  entered="opacity-100"
-                >
-                  <div className="bg-green-700 p-3 m-2 rounded-lg">
-                    {toast.child}
-                  </div>
-                </Transition>
-              );
-          }
+          const tone =
+            toast.type === "success"
+              ? "border-green-400/30 bg-green-500/15"
+              : "border-white/10 bg-slate-900/80";
+          return (
+            <div
+              key={key}
+              className={`w-72 max-w-[90vw] rounded-xl border ${tone} px-4 py-3 text-sm text-white shadow-2xl backdrop-blur-2xl`}
+            >
+              {toast.child}
+            </div>
+          );
         })}
       </div>
     </ToastContext.Provider>
