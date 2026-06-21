@@ -343,9 +343,14 @@ function Track({ track, progress = 0, isActive, isPlaying, reduceMotion, variant
       className="flex flex-col basis-1/2 items-center w-full sm:px-4 gap-4 whitespace-nowrap truncate"
     >
       {/* Active track is a rotating vinyl hero; the other is flat album art */}
+      {/* Size by the SMALLER of a rem cap, a viewport-width cap and a viewport-height
+          cap. aspect-square makes height follow width, so the vh term guarantees the
+          disc never overflows the viewport vertically: tall screens fall back to the
+          rem cap (large disc); short/wide screens shrink to fit so the player always
+          fills one screen with no scroll. */}
       <motion.div
         layout
-        className="relative flex items-center justify-center w-full max-w-[18rem] sm:max-w-[20rem] lg:max-w-[24rem] xl:max-w-[30rem] 2xl:max-w-[34rem] aspect-square"
+        className="relative flex items-center justify-center aspect-square w-[min(18rem,72vw,26vh)] sm:w-[min(20rem,42vw,48vh)] lg:w-[min(24rem,42vw,50vh)] xl:w-[min(30rem,40vw,52vh)] 2xl:w-[min(34rem,40vw,54vh)]"
         animate={
           reduceMotion
             ? undefined
