@@ -10,7 +10,6 @@ import { like, unlike } from "./like.js";
 import { usePalette } from "react-palette";
 import { useMediaQuery } from "./mediaMatchHook";
 import { FiUser } from "react-icons/fi";
-import Footer from "./spotifyFooter";
 import AuroraBackground from "./AuroraBackground";
 import VinylDisc from "./VinylDisc";
 import EqualizerBars from "./EqualizerBars";
@@ -321,7 +320,6 @@ export default function TransitionPlayer({
             },
           })}
         </div>
-        <Footer />
       </div>
     </div>
   );
