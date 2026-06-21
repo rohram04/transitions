@@ -6,7 +6,7 @@ export default function SelectBox({ track, ...props }) {
       {track ? (
         <TrackDisplay track={track} {...props} />
       ) : (
-        <div className="mx-auto mt-2 mb-auto grid place-items-center w-36 sm:w-44 aspect-square shrink-0 rounded-full border-2 border-dashed border-white/15 bg-white/5">
+        <div className="mx-auto mt-2 mb-auto grid place-items-center w-full max-w-[14rem] aspect-square rounded-full border-2 border-dashed border-white/15 bg-white/5">
           <div className="text-white/40 text-sm text-center px-6">
             Select a track
           </div>

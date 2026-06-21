@@ -14,9 +14,10 @@ export default function TrackDisplay({
   return (
     <div className="h-full w-full min-w-0 flex flex-col items-center p-2">
       <div className="flex flex-col grow items-center justify-center w-full min-w-0 gap-3">
-        {/* Floating vinyl disc — FIXED size so both slots match exactly and it
-            can never be squished by the flex column; spins while previewing. */}
-        <div className="relative w-36 sm:w-44 aspect-square shrink-0">
+        {/* Floating vinyl disc — fills the slot width (capped) so it flexes
+            into the available space; equal slots (w-1/2 + min-w-0) keep both
+            discs identical and square, so it can't distort. Spins while previewing. */}
+        <div className="relative w-full max-w-[14rem] aspect-square mx-auto">
           <VinylDisc
             src={artUrl}
             alt={track?.track?.album?.name}
