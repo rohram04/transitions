@@ -21,9 +21,9 @@ export default function LoginPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const res = await signup(username, password);
-        if (!res?.ok) {
-          setError(res?.error || "Could not create the account.");
+        const created = await signup(username, password);
+        if (!created?.ok) {
+          setError(created?.error || "Could not create the account.");
           return;
         }
       }
@@ -32,16 +32,21 @@ export default function LoginPage() {
         password,
         redirect: false,
       });
-      if (res?.error) {
+      if (!res || res.error) {
         setError(
           mode === "signup"
-            ? "Account created, but sign-in failed — try signing in."
+            ? "Account created — please sign in."
             : "Invalid username or password."
         );
         return;
       }
-      router.push("/home");
-      router.refresh();
+      // Full navigation (not router.push) so the server re-renders /home with
+      // the freshly-set session cookie.
+      window.location.assign("/home");
+      return; // keep the spinner up through the navigation
+    } catch (err) {
+      console.error("auth submit error:", err);
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
