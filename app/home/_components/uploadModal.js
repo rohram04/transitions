@@ -72,7 +72,7 @@ export default function Modal({ open = false, onClose: close, ytPlayer, onModalP
 
   const onClose = () => {
     close();
-    ytPlayer?.pause();
+    ytPlayer?.pauseAll();
     onModalPreviewEnd?.();
     setPreviewing(false);
     setPlayingKey(null);
@@ -118,7 +118,7 @@ export default function Modal({ open = false, onClose: close, ytPlayer, onModalP
                     <Search
                       onClick={(track) => {
                         selectedTracksDispatch({ type: "ADD_TRACK", track });
-                        ytPlayer?.pause();
+                        ytPlayer?.pauseAll();
                         setPreviewing(false);
                         setPlayingKey(null);
                       }}

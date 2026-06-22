@@ -60,7 +60,7 @@ export default function Page({ params }) {
   };
 
   const handleBack = () => {
-    ytPlayer.pause();
+    ytPlayer.pauseAll();
     if (typeof window !== "undefined" && window.history.length > 1) {
       router.back();
     } else {
@@ -88,7 +88,7 @@ export default function Page({ params }) {
                       containing block. */}
                   <button
                     onClick={() => {
-                      ytPlayer.pause();
+                      ytPlayer.pauseAll();
                       setStartIndex(false);
                     }}
                     className="fixed z-20 h-12 w-12 top-0 left-0 mx-2 my-4 hover:opacity-50 transition ease-in-out duration-300 rounded-lg p-2 text-white"

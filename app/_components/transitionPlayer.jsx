@@ -52,20 +52,22 @@ export default function TransitionPlayer({
     stopTimeTracking();
     setTrackTime(startMs);
     trackTimeIntervalRef.current = setInterval(() => {
-      const player = ytPlayerRef.current;
-      if (player?.getOwner() === "main") {
-        setTrackTime(player.getTime());
+      const yt = ytPlayerRef.current;
+      if (yt?.getOwner() === "main") {
+        const slot =
+          playingTrackIndexRef.current === 1 ? yt.slot1 : yt.slot0;
+        setTrackTime(slot.getTime());
       }
     }, 500);
   };
 
-  // Re-register onEnded each time we take ownership of the player.
+  // Re-register onEnded on slot 0 each time we take ownership of the player.
   const registerOnEnded = () => {
-    ytPlayerRef.current?.setOnEnded(() => {
-      const player = ytPlayerRef.current;
+    ytPlayerRef.current?.slot0.setOnEnded(() => {
+      const yt = ytPlayerRef.current;
       const tr = transitionsRef.current[activeTransitionRef.current];
       if (playingTrackIndexRef.current === 0 && tr?.youtube_video_id_2) {
-        player.play(tr.youtube_video_id_2, 0);
+        yt.slot1.play(tr.youtube_video_id_2, 0);
         playingTrackIndexRef.current = 1;
         setPlayingTrackIndex(1);
         setTrackTime(0);
@@ -82,12 +84,15 @@ export default function TransitionPlayer({
 
   // Auto-play track 1 whenever active transition changes.
   useEffect(() => {
-    if (!ytPlayer?.play) return;
+    if (!ytPlayer?.slot0?.play) return;
     const tr = transitions[activeTransition];
     if (tr?.youtube_video_id_1) {
       ytPlayer.setOwner("main");
       registerOnEnded();
-      ytPlayer.play(tr.youtube_video_id_1, (tr.start_time || 0) / 1000);
+      ytPlayer.slot0.play(tr.youtube_video_id_1, (tr.start_time || 0) / 1000);
+      if (tr.youtube_video_id_2) {
+        ytPlayer.slot1.cue(tr.youtube_video_id_2, 0);
+      }
       playingTrackIndexRef.current = 0;
       setPlayingTrackIndex(0);
       setLocalPlaying(true);
@@ -133,7 +138,7 @@ export default function TransitionPlayer({
   const handlePlayPause = () => {
     if (!ytPlayer) return;
     if (localPlaying) {
-      ytPlayer.pause();
+      ytPlayer.pauseAll();
       stopTimeTracking();
       setLocalPlaying(false);
     } else {
@@ -141,7 +146,10 @@ export default function TransitionPlayer({
       if (tr?.youtube_video_id_1) {
         ytPlayer.setOwner("main");
         registerOnEnded();
-        ytPlayer.play(tr.youtube_video_id_1, (tr.start_time || 0) / 1000);
+        ytPlayer.slot0.play(tr.youtube_video_id_1, (tr.start_time || 0) / 1000);
+        if (tr.youtube_video_id_2) {
+          ytPlayer.slot1.cue(tr.youtube_video_id_2, 0);
+        }
         playingTrackIndexRef.current = 0;
         setPlayingTrackIndex(0);
         setLocalPlaying(true);
@@ -334,7 +342,8 @@ export default function TransitionPlayer({
             },
             onModalPreviewEnd: () => {
               ytPlayer?.setOwner(null);
-              ytPlayer?.setOnEnded(null);
+              ytPlayer?.slot0.setOnEnded(null);
+              ytPlayer?.slot1.setOnEnded(null);
             },
           })}
         </div>
