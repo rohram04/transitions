@@ -9,7 +9,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { like, unlike } from "./like.js";
 import { usePalette } from "react-palette";
 import { useMediaQuery } from "./mediaMatchHook";
-import { FiUser } from "react-icons/fi";
+import { FiUser, FiShare2, FiCheck } from "react-icons/fi";
 import AuroraBackground from "./AuroraBackground";
 import VinylDisc from "./VinylDisc";
 import EqualizerBars from "./EqualizerBars";
@@ -29,6 +29,7 @@ export default function TransitionPlayer({
   const [playingTrackIndex, setPlayingTrackIndex] = useState(null);
   const [localPlaying, setLocalPlaying] = useState(false);
   const [trackTime, setTrackTime] = useState(0);
+  const [copied, setCopied] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const reduceMotion = useReducedMotion();
@@ -134,6 +135,25 @@ export default function TransitionPlayer({
       return copy;
     });
     return like(t.id);
+  };
+
+  const handleShare = async () => {
+    const url = `${window.location.origin}/transition/${t.id}`;
+    const title = `${tracks[t.track1_id]?.name ?? ""} → ${
+      tracks[t.track2_id]?.name ?? ""
+    }`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+      } catch {
+        // user dismissed the share sheet — nothing to do
+      }
+      return;
+    }
+    if (copyToClipboard(url)) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    }
   };
 
   const handlePlayPause = () => {
@@ -280,6 +300,38 @@ export default function TransitionPlayer({
           </div>
 
           <motion.button
+            whileTap={reduceMotion ? undefined : { scale: 0.85 }}
+            onClick={handleShare}
+            aria-label={copied ? "Link copied" : "Share this transition"}
+            className="relative h-7 w-7 sm:h-9 sm:w-9 text-white rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cue"
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              {copied ? (
+                <motion.span
+                  key="copied"
+                  initial={reduceMotion ? false : { scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={reduceMotion ? undefined : { scale: 0.5, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 18 }}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <FiCheck size="100%" className="text-cue" />
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="share"
+                  initial={reduceMotion ? false : { scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={reduceMotion ? undefined : { scale: 0.8, opacity: 0 }}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <FiShare2 size="90%" />
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
+
+          <motion.button
             whileTap={reduceMotion ? undefined : { scale: 0.92 }}
             disabled={pathname === `/profile/${t.profile?.id}`}
             onClick={() => router.push(`/profile/${t.profile?.id}`)}
@@ -358,6 +410,35 @@ export default function TransitionPlayer({
       </div>
     </div>
   );
+}
+
+// Copy text to the clipboard, preferring the async Clipboard API and falling
+// back to a hidden textarea + execCommand for older/insecure contexts. Returns
+// whether the copy is believed to have succeeded. (The async API resolves
+// later; we optimistically return true once it's been dispatched.)
+function copyToClipboard(text) {
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+    return true;
+  }
+  return fallbackCopy(text);
+}
+
+function fallbackCopy(text) {
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch {
+    return false;
+  }
 }
 
 function Track({ track, isActive, isPlaying, reduceMotion, variants }) {
