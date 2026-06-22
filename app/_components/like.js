@@ -2,19 +2,19 @@
 import pg from "../connection";
 import { getUser } from "@/app/home/_components/profile/action";
 
-export const like = async (transitionid) => {
+export const like = async (transition_id) => {
   const user = await getUser();
   if (!user) return;
   await pg("likes").insert({
-    userid: user.id,
-    transitionid,
+    user_id: user.id,
+    transition_id,
   });
 };
 
-export const unlike = async (transitionid) => {
+export const unlike = async (transition_id) => {
   const user = await getUser();
   if (!user) return;
   await pg("likes")
-    .where({ userid: user.id, transitionid })
+    .where({ user_id: user.id, transition_id })
     .del();
 };

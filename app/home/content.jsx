@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Upload from "./_components/upload";
-import Logo from "../_components/spotifyLogo";
+import Logo from "../_components/appLogo";
 import Profile from "./_components/profile/profile";
 import TransitionPlayer from "./_components/TransitionPlayer/TransitionPlayer";
 import useYouTubePlayer from "./youtubePlayer";

@@ -1,18 +1,15 @@
 import { FiUser } from "react-icons/fi";
-
-import { useLayoutEffect, useState } from "react";
-import { getProfile } from "./getProfile.js";
 import Image from "next/image";
 
 export default function Profile({ profile }) {
   return (
     <div className="w-full h-fit flex flex-col items-center">
-      {profile?.images?.length > 0 ? (
+      {profile?.avatar_url ? (
         <div className="flex h-fit justify-center w-full rounded-full">
           <span className="flex-none relative w-44 h-44 md:w-48 md:h-48 rounded-full">
             <Image
               className="object-contain rounded-full"
-              src={profile?.images[1]?.url}
+              src={profile.avatar_url}
               fill={true}
               alt={profile.display_name}
             />

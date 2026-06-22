@@ -23,14 +23,14 @@ export async function signup(username, password) {
   const existing = await pg("users").where({ username }).first();
   if (existing) return { ok: false, error: "That username is taken." };
 
-  const passwordhash = await bcrypt.hash(password, 12);
+  const password_hash = await bcrypt.hash(password, 12);
   try {
     await pg("users").insert({
-      spotifyid: randomUUID(),
+      id: randomUUID(),
       username,
-      passwordhash,
-      displayname: username,
-      avatarurl: null,
+      password_hash,
+      display_name: username,
+      avatar_url: null,
     });
   } catch (err) {
     // Unique-violation race between the check above and the insert.

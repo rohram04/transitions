@@ -15,8 +15,8 @@ export default function Transition({
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  const track1 = tracks[transition.trackid1];
-  const track2 = tracks[transition.trackid2];
+  const track1 = tracks[transition.track1_id];
+  const track2 = tracks[transition.track2_id];
   if (!track1 || !track2) return null;
 
   const handleDelete = async (e) => {
@@ -82,7 +82,7 @@ export default function Transition({
 
       <div className="flex flex-col sm:flex-row w-full gap-2">
         <Track
-          percentage={(transition.starttime / (track1.duration_ms || 1)) * 100}
+          percentage={(transition.start_time / (track1.duration_ms || 1)) * 100}
           track={track1}
         />
         <Track percentage={0} track={track2} />

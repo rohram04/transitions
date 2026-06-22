@@ -8,9 +8,9 @@ export async function resolveYoutubeId(trackName, artistName) {
   // 1. Check DB cache
   const cached = await pg("youtube_cache")
     .where("fingerprint", fingerprint)
-    .select("videoid")
+    .select("video_id")
     .first();
-  if (cached) return cached.videoid;
+  if (cached) return cached.video_id;
 
   // 2. Try yt-search (no API key, scrapes YouTube)
   try {
@@ -19,7 +19,7 @@ export async function resolveYoutubeId(trackName, artistName) {
     const video = results.videos?.[0];
     if (video?.videoId) {
       await pg("youtube_cache")
-        .insert({ fingerprint, videoid: video.videoId })
+        .insert({ fingerprint, video_id: video.videoId })
         .onConflict("fingerprint")
         .ignore();
       return video.videoId;
@@ -46,7 +46,7 @@ export async function resolveYoutubeId(trackName, artistName) {
       const videoId = data.items?.[0]?.id?.videoId;
       if (videoId) {
         await pg("youtube_cache")
-          .insert({ fingerprint, videoid: videoId })
+          .insert({ fingerprint, video_id: videoId })
           .onConflict("fingerprint")
           .ignore();
         return videoId;

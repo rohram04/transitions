@@ -5,20 +5,28 @@ import bcrypt from "bcryptjs";
 import pg from "@/app/connection";
 
 // Upsert a users row from an OAuth profile (GitHub / Google).
-async function upsertOAuthUser({ id, displayname, avatarurl }) {
+async function upsertOAuthUser({ id, display_name, avatar_url }) {
   await pg("users")
-    .insert({ spotifyid: String(id), displayname, avatarurl })
-    .onConflict("spotifyid")
-    .merge(["displayname", "avatarurl"]);
+    .insert({ id: String(id), display_name, avatar_url })
+    .onConflict("id")
+    .merge(["display_name", "avatar_url"]);
 }
 
-// Normalize a provider's profile into { id, displayname, avatarurl }.
+// Normalize a provider's profile into { id, display_name, avatar_url }.
 function normalizeOAuthProfile(provider, profile) {
   if (provider === "github") {
-    return { id: profile.id, displayname: profile.login, avatarurl: profile.avatar_url };
+    return {
+      id: profile.id,
+      display_name: profile.login,
+      avatar_url: profile.avatar_url,
+    };
   }
   if (provider === "google") {
-    return { id: profile.sub, displayname: profile.name, avatarurl: profile.picture };
+    return {
+      id: profile.sub,
+      display_name: profile.name,
+      avatar_url: profile.picture,
+    };
   }
   return null;
 }
@@ -48,16 +56,16 @@ export const authOptions = {
         if (!username || !password) return null;
 
         const user = await pg("users").where({ username }).first();
-        if (!user?.passwordhash) return null;
+        if (!user?.password_hash) return null;
 
-        const ok = await bcrypt.compare(password, user.passwordhash);
+        const ok = await bcrypt.compare(password, user.password_hash);
         if (!ok) return null;
 
         // NextAuth `user` shape; carried into the jwt callback below.
         return {
-          id: user.spotifyid,
-          name: user.displayname,
-          image: user.avatarurl || null,
+          id: user.id,
+          name: user.display_name,
+          image: user.avatar_url || null,
         };
       },
     }),
@@ -73,8 +81,8 @@ export const authOptions = {
       const normalized = normalizeOAuthProfile(account?.provider, profile);
       if (normalized) {
         token.id = String(normalized.id);
-        token.login = normalized.displayname;
-        token.avatarUrl = normalized.avatarurl;
+        token.login = normalized.display_name;
+        token.avatarUrl = normalized.avatar_url;
       } else if (user) {
         // Credentials sign-in: `user` is the object returned from authorize().
         token.id = user.id;

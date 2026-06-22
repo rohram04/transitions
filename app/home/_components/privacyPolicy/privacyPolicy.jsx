@@ -46,34 +46,23 @@ export default function PrivacyPolicyModal({
 
                   <div className="text-left p-2 first:mt-0 last:mb-0">
                     <Section header="What data we use and how do we use it?">
-                      <p className="">
-                        transitions.ro-hith.com uses your Spotify account to
-                        play songs from Spotify, access track metadata (ie.
-                        album covers, artists, songnames, album names, etc).
-                        access your profile picture, displayname, and Spotify
-                        id. The only user data directly stored in our
-                        application is your Spotify id. The Spotify id is then
-                        used to keep track of the transitions you create as well
-                        as the transitions you have liked. It is also used in
-                        the link for your profile page.
+                      <p>
+                        Transitions uses GitHub, Google, or a username and
+                        password to sign you in. For OAuth sign-in we store your
+                        provider account id, display name, and profile picture
+                        URL. For username/password accounts we store a hashed
+                        password and the username you chose. When you upload a
+                        transition we store the two tracks&apos; metadata (from
+                        the iTunes Search API), the transition timing, and
+                        cached YouTube video ids used for playback. Your account
+                        id is also used for likes and your profile page URL.
                       </p>
                     </Section>
 
                     <Section header="How do I unlink my account?">
-                      <p className="">
-                        To remove this applications access to your Spotify
-                        account, click remove access for &quot;Transitions&quot;
-                        on{" "}
-                        <Link
-                          className="underline"
-                          href="https://www.spotify.com/account/apps/"
-                          target="_blank"
-                        >
-                          Spotify&apos;s Third Party App Page
-                        </Link>{" "}
-                        (Note this does not delete your account or your uploaded
-                        transitions from transitions.ro-hith.com; To do so
-                        navigate to{" "}
+                      <p>
+                        To delete your Transitions account and remove your
+                        uploaded transitions and likes from our database, use{" "}
                         <button
                           className="underline"
                           onClick={() => {
@@ -83,16 +72,16 @@ export default function PrivacyPolicyModal({
                         >
                           Delete Account
                         </button>
-                        ).
+                        . If you signed in with GitHub or Google, you can also
+                        revoke this app&apos;s access in your GitHub or Google
+                        account security settings.
                       </p>
                     </Section>
 
                     <Section header="How do we use cookies?">
                       <p>
-                        We use cookies to store your user profile. This allows
-                        us to know you are the one logged in even when a page
-                        change occurs. The only thing we store in a cookie is
-                        your Spotify user profile and nothing else. Visit{" "}
+                        We use session cookies managed by NextAuth so you stay
+                        signed in across page loads. Visit{" "}
                         <Link
                           href="https://allaboutcookies.org"
                           className="underline"
@@ -107,7 +96,7 @@ export default function PrivacyPolicyModal({
                       </p>
                     </Section>
 
-                    <p className="text-slate-400">Last Updated 8/18/2023</p>
+                    <p className="text-slate-400">Last Updated 6/21/2026</p>
                   </div>
                 </div>
               </Dialog.Panel>

@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { getProfile } from "./_components/getProfile.js";
 import { getUser } from "@/app/home/_components/profile/action";
 import { CgSpinner } from "react-icons/cg";
-import Logo from "../../_components/spotifyLogo";
+import Logo from "../../_components/appLogo";
 
 // No-op placeholder for TransitionPlayer's required cloneElement child (the
 // profile view has no upload modal; the back button lives at the page level).
