@@ -13,6 +13,7 @@ import { FiUser } from "react-icons/fi";
 import AuroraBackground from "./AuroraBackground";
 import VinylDisc from "./VinylDisc";
 import EqualizerBars from "./EqualizerBars";
+import SegueTimeline from "./SegueTimeline";
 
 export default function TransitionPlayer({
   transitions,
@@ -196,7 +197,6 @@ export default function TransitionPlayer({
               <>
                 <Track
                   track={tracks[t.track1_id]}
-                  progress={track1Progress}
                   isActive={playingTrackIndex === 0}
                   isPlaying={localPlaying && playingTrackIndex === 0}
                   reduceMotion={reduceMotion}
@@ -204,7 +204,6 @@ export default function TransitionPlayer({
                 />
                 <Track
                   track={tracks[t.track2_id]}
-                  progress={track2Progress}
                   isActive={playingTrackIndex === 1}
                   isPlaying={localPlaying && playingTrackIndex === 1}
                   reduceMotion={reduceMotion}
@@ -214,7 +213,6 @@ export default function TransitionPlayer({
             ) : (
               <MobileTracks
                 tracks={[tracks[t.track1_id], tracks[t.track2_id]]}
-                progresses={[track1Progress, track2Progress]}
                 activeIndex={playingTrackIndex ?? 0}
                 playingTrackIndex={playingTrackIndex}
                 localPlaying={localPlaying}
@@ -224,6 +222,16 @@ export default function TransitionPlayer({
           </motion.div>
         </AnimatePresence>
         </div>
+
+        {/* Signature: one connected timeline that passes the baton at the cut */}
+        <SegueTimeline
+          track1={tracks[t.track1_id]}
+          track2={tracks[t.track2_id]}
+          progress1={track1Progress}
+          progress2={track2Progress}
+          playingIndex={playingTrackIndex}
+          reduceMotion={reduceMotion}
+        />
 
         {/* Floating glass control dock */}
         <div className="mx-auto mb-2 sm:mb-4 flex w-full max-w-3xl items-center justify-center gap-3 sm:gap-5 rounded-3xl border border-white/10 bg-white/5 px-4 py-3 sm:px-6 sm:py-4 shadow-2xl backdrop-blur-2xl">
@@ -239,7 +247,7 @@ export default function TransitionPlayer({
               whileTap={reduceMotion ? undefined : { scale: 0.8 }}
               onClick={handleLike}
               aria-label={liked ? "Unlike" : "Like"}
-              className="relative h-7 w-7 sm:h-9 sm:w-9 text-white"
+              className="relative h-7 w-7 sm:h-9 sm:w-9 text-white rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cue"
             >
               <AnimatePresence mode="wait" initial={false}>
                 {liked ? (
@@ -266,7 +274,7 @@ export default function TransitionPlayer({
                 )}
               </AnimatePresence>
             </motion.button>
-            <span className="text-xs sm:text-sm font-semibold text-white/80 tabular-nums">
+            <span className="font-mono text-xs sm:text-sm font-semibold text-white/80 tabular-nums">
               {t.likes}
             </span>
           </div>
@@ -275,7 +283,7 @@ export default function TransitionPlayer({
             whileTap={reduceMotion ? undefined : { scale: 0.92 }}
             disabled={pathname === `/profile/${t.profile?.id}`}
             onClick={() => router.push(`/profile/${t.profile?.id}`)}
-            className="flex items-center gap-2 disabled:opacity-60"
+            className="flex items-center gap-2 rounded-full disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cue"
           >
             <span className="flex-none relative w-9 h-9 sm:w-12 sm:h-12 rounded-full ring-2 ring-white/20">
               {t.profile?.avatar_url ? (
@@ -299,7 +307,7 @@ export default function TransitionPlayer({
           <motion.button
             whileTap={reduceMotion ? undefined : { scale: 0.85 }}
             onClick={() => setActiveTransition((prev) => prev - 1)}
-            className="h-11 w-11 sm:h-12 sm:w-12 rounded-full text-white hover:bg-white/10 transition disabled:opacity-30"
+            className="h-11 w-11 sm:h-12 sm:w-12 rounded-full text-white hover:bg-white/10 transition disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cue"
             disabled={activeTransition === 0}
             aria-label="Previous transition"
           >
@@ -309,7 +317,7 @@ export default function TransitionPlayer({
           <motion.button
             whileTap={reduceMotion ? undefined : { scale: 0.85 }}
             onClick={handlePlayPause}
-            className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-white text-slate-950 shadow-lg hover:scale-105 transition flex items-center justify-center"
+            className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-white text-slate-950 shadow-lg hover:scale-105 transition flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cue focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
             aria-label={localPlaying ? "Pause" : "Play"}
           >
             {localPlaying ? (
@@ -327,7 +335,7 @@ export default function TransitionPlayer({
               }
               setActiveTransition((prev) => prev + 1);
             }}
-            className="h-11 w-11 sm:h-12 sm:w-12 rounded-full text-white hover:bg-white/10 transition disabled:opacity-30"
+            className="h-11 w-11 sm:h-12 sm:w-12 rounded-full text-white hover:bg-white/10 transition disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cue"
             disabled={activeTransition === transitions.length - 1}
             aria-label="Next transition"
           >
@@ -352,11 +360,8 @@ export default function TransitionPlayer({
   );
 }
 
-function Track({ track, progress = 0, isActive, isPlaying, reduceMotion, variants }) {
+function Track({ track, isActive, isPlaying, reduceMotion, variants }) {
   if (!track) return null;
-  let percentage = (progress / (track.duration_ms || 1)) * 100;
-  if (percentage > 100) percentage = 100;
-  if (percentage < 1) percentage = 0;
 
   const artUrl = track?.album?.images[0]?.url || "";
 
@@ -404,7 +409,7 @@ function Track({ track, progress = 0, isActive, isPlaying, reduceMotion, variant
       >
         <div className="flex items-center justify-center gap-2">
           {isPlaying && <EqualizerBars isPlaying={isPlaying} />}
-          <div className="text-2xl sm:text-xl md:text-2xl lg:text-4xl font-bold tracking-tight whitespace-nowrap truncate group-focus:whitespace-normal">
+          <div className="font-display text-2xl sm:text-xl md:text-2xl lg:text-4xl font-bold tracking-tight whitespace-nowrap truncate group-focus:whitespace-normal">
             {track.name}
           </div>
         </div>
@@ -416,13 +421,6 @@ function Track({ track, progress = 0, isActive, isPlaying, reduceMotion, variant
         <div className="lg:text-lg text-white/50 whitespace-nowrap truncate group-focus:whitespace-normal">
           {track.album?.name}
         </div>
-      </div>
-
-      <div className="w-4/5 sm:w-full max-w-[20rem] h-2 rounded-full bg-white/15 overflow-hidden self-center">
-        <div
-          className="h-full rounded-full bg-white transition-[width] duration-500 ease-linear"
-          style={{ width: percentage + "%" }}
-        />
       </div>
     </motion.div>
   );
@@ -438,7 +436,6 @@ function Track({ track, progress = 0, isActive, isPlaying, reduceMotion, variant
 // of flow and can't push the layout around).
 function MobileTracks({
   tracks,
-  progresses,
   activeIndex,
   playingTrackIndex,
   localPlaying,
@@ -496,7 +493,6 @@ function MobileTracks({
           >
             <Track
               track={activeTrack}
-              progress={progresses[activeIndex]}
               isActive={playingTrackIndex === activeIndex}
               isPlaying={localPlaying && playingTrackIndex === activeIndex}
               reduceMotion={reduceMotion}

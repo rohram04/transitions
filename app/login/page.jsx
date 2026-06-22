@@ -55,11 +55,11 @@ export default function LoginPage() {
   return (
     <div className="min-h-[100dvh] w-full flex items-center justify-center bg-slate-950 p-4">
       <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-slate-900/80 backdrop-blur-2xl shadow-2xl p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-white text-center tracking-tight">
-          transitions
+        <h1 className="font-display text-2xl font-bold text-white text-center tracking-widest uppercase">
+          Transitions
         </h1>
-        <p className="text-white/50 text-sm text-center mt-1 mb-6">
-          {mode === "signin" ? "Sign in to continue" : "Create an account"}
+        <p className="text-white/50 text-sm text-center mt-1.5 mb-6 text-balance">
+          Discover the moment one song becomes another.
         </p>
 
         <div className="flex flex-col gap-3">

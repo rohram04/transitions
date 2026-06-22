@@ -4,10 +4,13 @@
 // Renders blurred drifting colour blobs instead of a flat linear gradient.
 // `palette1` / `palette2` are react-palette `data` objects (vibrant, muted, ...).
 export default function AuroraBackground({ palette1, palette2 }) {
-  const c1a = palette1?.vibrant || "#6366f1";
-  const c1b = palette1?.darkVibrant || palette1?.muted || "#312e81";
-  const c2a = palette2?.vibrant || "#d946ef";
-  const c2b = palette2?.darkVibrant || palette2?.muted || "#701a75";
+  // Fallbacks use the owned "seam" palette (tailwind theme.colors.seam), not
+  // Tailwind's default indigo/fuchsia, so an art-less transition still looks
+  // like Transitions rather than a template.
+  const c1a = palette1?.vibrant || "#5B53FF";
+  const c1b = palette1?.darkVibrant || palette1?.muted || "#2B2780";
+  const c2a = palette2?.vibrant || "#FF5C8A";
+  const c2b = palette2?.darkVibrant || palette2?.muted || "#7A1F47";
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden bg-slate-950">

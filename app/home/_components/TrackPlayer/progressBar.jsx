@@ -31,7 +31,7 @@ export default function ProgressBar({
         className="w-full h-2.5 rounded-full cursor-pointer bg-slate-600 progress"
         disabled={disabled}
       /> */}
-      <div className={"text-sm text-white/80 tabular-nums" + (value ? "" : " invisible")}>
+      <div className={"font-mono text-sm text-white/80 tabular-nums" + (value ? "" : " invisible")}>
         {convertedValue}
       </div>
       <div className="mt-2">
@@ -59,7 +59,7 @@ export default function ProgressBar({
         >
           Remove
         </button>
-        <div className="text-sm grow text-right text-white/80 tabular-nums">{convertedProgress}</div>
+        <div className="font-mono text-sm grow text-right text-white/80 tabular-nums">{convertedProgress}</div>
       </div>
     </div>
   );
