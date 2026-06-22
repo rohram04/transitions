@@ -10,7 +10,7 @@ export const getUser = async () => {
   return {
     id: session.user.id,
     display_name: session.user.name || session.user.login,
-    avatarurl: session.user.image,
+    avatar_url: session.user.image,
     country: null,
   };
 };
@@ -22,5 +22,5 @@ export const logout = async () => {
 export async function deleteAccount() {
   const user = await getUser();
   if (!user) return;
-  return await pg("users").where("spotifyid", user.id).del();
+  return await pg("users").where("id", user.id).del();
 }

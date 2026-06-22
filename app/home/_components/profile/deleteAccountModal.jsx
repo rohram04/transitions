@@ -1,7 +1,6 @@
-import { Fragment, useRef, useState, useEffect, useReducer } from "react";
+import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { MdClose } from "react-icons/md";
-import Link from "next/link";
 import { deleteAccount, logout } from "./action";
 
 export default function DeleteAccountModal({ open, onClose, logout }) {
@@ -43,21 +42,11 @@ export default function DeleteAccountModal({ open, onClose, logout }) {
                     Are you sure you want to delete your account?
                   </h1>
                   <p>
-                    This means all data associated with your spotify account
-                    that exists in the transitions application will be removed.
-                    This includes but is not limited to your display name,
-                    spotify id, as well as all uploaded transitions and their
-                    corresponding likes. To completely disconnect your spotify
-                    account you must disconnect transitions by clicking remove
-                    access in your{" "}
-                    <Link
-                      href="https://www.spotify.com/us/account/apps/"
-                      target="_blank"
-                      className="underline"
-                    >
-                      spotify account settings
-                    </Link>
-                    .
+                    This permanently deletes your Transitions account and all
+                    data we store for you: your display name, profile picture
+                    URL, uploaded transitions, and likes. If you signed in with
+                    GitHub or Google, you can also revoke this app in your
+                    provider&apos;s account security settings.
                   </p>
                   <div className="flex justify-end gap-2 mt-4">
                     <button

@@ -64,8 +64,8 @@ export default function TransitionPlayer({
     ytPlayerRef.current?.setOnEnded(() => {
       const player = ytPlayerRef.current;
       const tr = transitionsRef.current[activeTransitionRef.current];
-      if (playingTrackIndexRef.current === 0 && tr?.youtubevideoid2) {
-        player.play(tr.youtubevideoid2, 0);
+      if (playingTrackIndexRef.current === 0 && tr?.youtube_video_id_2) {
+        player.play(tr.youtube_video_id_2, 0);
         playingTrackIndexRef.current = 1;
         setPlayingTrackIndex(1);
         setTrackTime(0);
@@ -84,14 +84,14 @@ export default function TransitionPlayer({
   useEffect(() => {
     if (!ytPlayer?.play) return;
     const tr = transitions[activeTransition];
-    if (tr?.youtubevideoid1) {
+    if (tr?.youtube_video_id_1) {
       ytPlayer.setOwner("main");
       registerOnEnded();
-      ytPlayer.play(tr.youtubevideoid1, (tr.starttime || 0) / 1000);
+      ytPlayer.play(tr.youtube_video_id_1, (tr.start_time || 0) / 1000);
       playingTrackIndexRef.current = 0;
       setPlayingTrackIndex(0);
       setLocalPlaying(true);
-      startTimeTracking(tr.starttime || 0);
+      startTimeTracking(tr.start_time || 0);
     }
   }, [activeTransition]);
 
@@ -100,12 +100,12 @@ export default function TransitionPlayer({
   }, []);
 
   const t = transitions[activeTransition];
-  const { data: track1Color } = usePalette(tracks[t.trackid1]?.album?.images[0]?.url || "");
-  const { data: track2Color } = usePalette(tracks[t.trackid2]?.album?.images[0]?.url || "");
+  const { data: track1Color } = usePalette(tracks[t.track1_id]?.album?.images[0]?.url || "");
+  const { data: track2Color } = usePalette(tracks[t.track2_id]?.album?.images[0]?.url || "");
   const sm = useMediaQuery("(min-width: 640px)");
 
   const track1Progress =
-    playingTrackIndex === 0 ? trackTime : tracks[t.trackid1]?.duration_ms ?? 0;
+    playingTrackIndex === 0 ? trackTime : tracks[t.track1_id]?.duration_ms ?? 0;
   const track2Progress =
     playingTrackIndex === 1 ? trackTime : 0;
 
@@ -138,14 +138,14 @@ export default function TransitionPlayer({
       setLocalPlaying(false);
     } else {
       const tr = transitions[activeTransition];
-      if (tr?.youtubevideoid1) {
+      if (tr?.youtube_video_id_1) {
         ytPlayer.setOwner("main");
         registerOnEnded();
-        ytPlayer.play(tr.youtubevideoid1, (tr.starttime || 0) / 1000);
+        ytPlayer.play(tr.youtube_video_id_1, (tr.start_time || 0) / 1000);
         playingTrackIndexRef.current = 0;
         setPlayingTrackIndex(0);
         setLocalPlaying(true);
-        startTimeTracking(tr.starttime || 0);
+        startTimeTracking(tr.start_time || 0);
       }
     }
   };
@@ -187,7 +187,7 @@ export default function TransitionPlayer({
             {sm ? (
               <>
                 <Track
-                  track={tracks[t.trackid1]}
+                  track={tracks[t.track1_id]}
                   progress={track1Progress}
                   isActive={playingTrackIndex === 0}
                   isPlaying={localPlaying && playingTrackIndex === 0}
@@ -195,7 +195,7 @@ export default function TransitionPlayer({
                   variants={cardVariants}
                 />
                 <Track
-                  track={tracks[t.trackid2]}
+                  track={tracks[t.track2_id]}
                   progress={track2Progress}
                   isActive={playingTrackIndex === 1}
                   isPlaying={localPlaying && playingTrackIndex === 1}
@@ -205,7 +205,7 @@ export default function TransitionPlayer({
               </>
             ) : (
               <MobileTracks
-                tracks={[tracks[t.trackid1], tracks[t.trackid2]]}
+                tracks={[tracks[t.track1_id], tracks[t.track2_id]]}
                 progresses={[track1Progress, track2Progress]}
                 activeIndex={playingTrackIndex ?? 0}
                 playingTrackIndex={playingTrackIndex}
@@ -220,7 +220,7 @@ export default function TransitionPlayer({
         {/* Floating glass control dock */}
         <div className="mx-auto mb-2 sm:mb-4 flex w-full max-w-3xl items-center justify-center gap-3 sm:gap-5 rounded-3xl border border-white/10 bg-white/5 px-4 py-3 sm:px-6 sm:py-4 shadow-2xl backdrop-blur-2xl">
           {explicitWarning &&
-            (tracks[t.trackid1]?.explicit || tracks[t.trackid2]?.explicit) && (
+            (tracks[t.track1_id]?.explicit || tracks[t.track2_id]?.explicit) && (
               <span className="flex-none relative w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-yellow-400 flex items-center justify-center">
                 <span className="text-black font-bold text-xs">E</span>
               </span>
@@ -270,10 +270,10 @@ export default function TransitionPlayer({
             className="flex items-center gap-2 disabled:opacity-60"
           >
             <span className="flex-none relative w-9 h-9 sm:w-12 sm:h-12 rounded-full ring-2 ring-white/20">
-              {t.profile?.avatarurl ? (
+              {t.profile?.avatar_url ? (
                 <Image
                   className="object-cover rounded-full"
-                  src={t.profile.avatarurl}
+                  src={t.profile.avatar_url}
                   fill={true}
                   alt={t.profile.display_name || ""}
                 />

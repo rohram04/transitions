@@ -7,46 +7,46 @@ export async function getTransitions(profileUserId) {
   if (!user) return { transitions: [], tracks: {} };
 
   const transitions = await pg("transitions")
-    .join("users", { "users.spotifyid": "transitions.userid" })
-    .leftJoin("likes", { "likes.transitionid": "transitions.id" })
+    .join("users", { "users.id": "transitions.user_id" })
+    .leftJoin("likes", { "likes.transition_id": "transitions.id" })
     .groupBy(
       "transitions.id",
-      "users.spotifyid",
-      "users.displayname",
-      "users.avatarurl"
+      "users.id",
+      "users.display_name",
+      "users.avatar_url"
     )
     .select(
       "transitions.id",
-      "transitions.userid",
-      "trackid1",
-      "trackid2",
-      "starttime",
-      "track1json",
-      "track2json",
-      "youtubevideoid1",
-      "youtubevideoid2",
+      "transitions.user_id",
+      "track1_id",
+      "track2_id",
+      "start_time",
+      "track1_json",
+      "track2_json",
+      "youtube_video_id_1",
+      "youtube_video_id_2",
       pg.raw(
-        `count(case when likes.userid = ? then 1 else null end) as liked`,
+        `count(case when likes.user_id = ? then 1 else null end) as liked`,
         [user.id]
       ),
-      "users.displayname as profilename",
-      "users.avatarurl as profileavatar"
+      "users.display_name as profilename",
+      "users.avatar_url as profileavatar"
     )
-    .count("transitionid", { as: "likes" })
-    .where("transitions.userid", profileUserId);
+    .count("transition_id", { as: "likes" })
+    .where("transitions.user_id", profileUserId);
 
   if (transitions.length === 0) return { transitions: [], tracks: {} };
 
   const tracks = {};
   for (const t of transitions) {
-    const t1 = typeof t.track1json === "string" ? JSON.parse(t.track1json) : t.track1json;
-    const t2 = typeof t.track2json === "string" ? JSON.parse(t.track2json) : t.track2json;
-    if (t1) tracks[t.trackid1] = t1;
-    if (t2) tracks[t.trackid2] = t2;
+    const t1 = typeof t.track1_json === "string" ? JSON.parse(t.track1_json) : t.track1_json;
+    const t2 = typeof t.track2_json === "string" ? JSON.parse(t.track2_json) : t.track2_json;
+    if (t1) tracks[t.track1_id] = t1;
+    if (t2) tracks[t.track2_id] = t2;
     t.profile = {
-      id: t.userid,
+      id: t.user_id,
       display_name: t.profilename,
-      avatarurl: t.profileavatar,
+      avatar_url: t.profileavatar,
     };
   }
 

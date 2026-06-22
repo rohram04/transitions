@@ -3,12 +3,8 @@ import pg from "@/app/connection";
 
 export async function getProfile(userid) {
   const user = await pg("users")
-    .where("spotifyid", userid)
-    .select(
-      "spotifyid as id",
-      "displayname as display_name",
-      "avatarurl"
-    )
+    .where("id", userid)
+    .select("id", "display_name", "avatar_url")
     .first();
   return user || null;
 }

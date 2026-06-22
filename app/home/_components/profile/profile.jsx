@@ -65,10 +65,10 @@ export default function Profile({ setExplicitWarning }) {
         className="flex gap-2 p-2 rounded-2xl border border-white/10 bg-white/10 backdrop-blur-xl shadow-lg text-white hover:bg-white/20 transition ease-in-out duration-300"
       >
         <span className="flex-none h-fit relative">
-          {profile?.avatarurl ? (
+          {profile?.avatar_url ? (
             <Image
               className="object-contain rounded-full"
-              src={profile?.avatarurl}
+              src={profile?.avatar_url}
               height={40}
               width={40}
               alt={profile.display_name}

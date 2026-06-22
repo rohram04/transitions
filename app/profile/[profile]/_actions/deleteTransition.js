@@ -2,7 +2,7 @@
 import pg from "@/app/connection";
 import { getUser } from "@/app/home/_components/profile/action";
 
-// Delete a transition the logged-in user owns. Likes/comments referencing it
+// Delete a transition the logged-in user owns. Likes referencing it
 // are removed automatically via the schema's ON DELETE CASCADE constraints.
 export async function deleteTransition(transitionId) {
   const user = await getUser();
@@ -13,7 +13,7 @@ export async function deleteTransition(transitionId) {
     .first();
 
   if (!transition) return { ok: false, error: "not_found" };
-  if (String(transition.userid) !== String(user.id)) {
+  if (String(transition.user_id) !== String(user.id)) {
     return { ok: false, error: "forbidden" };
   }
 
