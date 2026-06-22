@@ -26,6 +26,18 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+/* Start-time picker slider thumb (upload preview). */
+input[type="range"] {
+  -webkit-appearance: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background: white;
+  height: 1.5rem;
+  width: 0.5rem;
+  border-radius: 1rem;
+}
+
 /* ===== Look B "Bold" — animations & decorative elements ===== */
 
 /* Shimmer (skeleton loading) */
