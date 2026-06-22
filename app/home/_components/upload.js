@@ -12,7 +12,7 @@ export default function Upload(props) {
       <button
         onClick={() => {
           setOpen(true);
-          props.ytPlayer?.pause();
+          props.ytPlayer?.pauseAll();
           props.onModalPreviewStart?.();
         }}
         className="h-14 w-14 rounded-lg hover:opacity-50 transition ease-in-out duration-300 text-white"
