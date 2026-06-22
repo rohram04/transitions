@@ -9,6 +9,8 @@ export function YouTubePlayerProvider({ children }) {
   const onEndedRef = useRef(null);
   // Tracks which component currently "owns" playback ("main" | "modal" | null).
   const ownerRef = useRef(null);
+  const cuedVideoIdRef = useRef(null);
+  const cuedStartSecondsRef = useRef(0);
 
   useEffect(() => {
     let active = true;
@@ -66,17 +68,40 @@ export function YouTubePlayerProvider({ children }) {
       clearTimeout(fallback);
       playerRef.current?.destroy?.();
       playerRef.current = null;
+      cuedVideoIdRef.current = null;
+      cuedStartSecondsRef.current = 0;
     };
   }, []);
 
   const value = {
     ytReady,
+    cue: (videoId, startSeconds = 0) => {
+      const player = playerRef.current;
+      if (!player?.cueVideoById) return;
+      const start = Number(startSeconds);
+      player.cueVideoById({ videoId, startSeconds: start });
+      cuedVideoIdRef.current = videoId;
+      cuedStartSecondsRef.current = start;
+    },
     play: (videoId, startSeconds = 0) => {
-      if (!playerRef.current?.loadVideoById) return;
-      playerRef.current.loadVideoById({
-        videoId,
-        startSeconds: Number(startSeconds),
-      });
+      const player = playerRef.current;
+      if (!player) return;
+      const start = Number(startSeconds);
+
+      if (cuedVideoIdRef.current === videoId && player.playVideo) {
+        if (Math.abs(cuedStartSecondsRef.current - start) >= 0.5) {
+          player.seekTo?.(start, true);
+          cuedStartSecondsRef.current = start;
+        }
+        player.playVideo();
+        return;
+      }
+
+      if (player.loadVideoById) {
+        player.loadVideoById({ videoId, startSeconds: start });
+        cuedVideoIdRef.current = videoId;
+        cuedStartSecondsRef.current = start;
+      }
     },
     pause: () => playerRef.current?.pauseVideo?.(),
     resume: () => playerRef.current?.playVideo?.(),

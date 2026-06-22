@@ -8,6 +8,7 @@ export default function TrackDisplay({
   paused,
   onChange,
   spinning = false,
+  preparing = false,
 }) {
   const artUrl = track?.track?.album?.images?.[0]?.url || "";
 
@@ -39,6 +40,9 @@ export default function TrackDisplay({
           <div className="text-sm text-white/50 truncate group-focus:whitespace-normal">
             {track.track.album.name}
           </div>
+          {preparing && (
+            <div className="text-xs text-white/40 mt-1">Preparing preview…</div>
+          )}
         </div>
       </div>
       <div className="p-2 w-full min-w-0">
